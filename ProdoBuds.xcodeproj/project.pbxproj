@@ -148,6 +148,8 @@
 				DEVELOPMENT_TEAM = 2Q86Y3GN28;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ProdoBuds/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the camera to record timelapse video.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We need permission to save videos to your photo library.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -180,6 +182,8 @@
 				DEVELOPMENT_TEAM = 2Q86Y3GN28;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ProdoBuds/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app uses the camera to record timelapse video.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "We need permission to save videos to your photo library.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
