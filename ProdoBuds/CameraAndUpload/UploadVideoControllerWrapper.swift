@@ -5,14 +5,12 @@ import SwiftUI
 
 struct UploadVideoControllerWrapper: UIViewControllerRepresentable {
     let videoURL: URL?
-    let timeElapsed: String?
     
     func makeUIViewController(context: Context) -> UploadVideoViewController {
         print("UploadVideoControllerWrapper: makeUIViewController called")
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "UploadVideoViewControllerID") as! UploadVideoViewController
         vc.videoURL = videoURL
-        vc.timeElapsed = timeElapsed
         // Ensure full-screen presentation when shown from SwiftUI
         vc.modalPresentationStyle = .fullScreen
         return vc

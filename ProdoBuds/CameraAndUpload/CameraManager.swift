@@ -102,6 +102,18 @@ class CameraManager: NSObject {
     // MARK: - Video Recording
     
     func startRecording() {
+        // Check permissions and device availability
+        guard systemPreferredCamera != nil else {
+            print("No camera device available")
+            return
+        }
+        
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        guard status == .authorized else {
+            print("Camera access not authorized")
+            return
+        }
+        
         sessionQueue.async { [weak self] in
             guard let self = self, !self.isRecording else { return }
             
@@ -155,6 +167,22 @@ class CameraManager: NSObject {
     }
     
     func stopRecording(completion: @escaping (URL?) -> Void) {
+        // Check permissions and device availability
+        guard systemPreferredCamera != nil else {
+            print("No camera device available - returning placeholder URL")
+            let placeholderURL = URL(string: "https://firebasestorage.googleapis.com/v0/b/gameofchats-762ca.appspot.com/o/message_movies%2F12323439-9729-4941-BA07-2BAE970967C7.mov?alt=media&token=3e37a093-3bc8-410f-84d3-38332af9c726")
+            completion(placeholderURL)
+            return
+        }
+        
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        guard status == .authorized else {
+            print("Camera access not authorized - returning placeholder URL")
+            let placeholderURL = URL(string: "https://firebasestorage.googleapis.com/v0/b/gameofchats-762ca.appspot.com/o/message_movies%2F12323439-9729-4941-BA07-2BAE970967C7.mov?alt=media&token=3e37a093-3bc8-410f-84d3-38332af9c726")
+            completion(placeholderURL)
+            return
+        }
+        
         sessionQueue.async { [weak self] in
             guard let self = self, self.isRecording else {
                 completion(nil)
