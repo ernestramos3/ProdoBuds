@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-class ViewController: UIViewController {
+class CameraButtonViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()

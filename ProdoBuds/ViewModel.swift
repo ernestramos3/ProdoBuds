@@ -18,6 +18,10 @@ class ViewModel {
     var fps: Double = 0.0
     var lastSavedVideoURL: URL?
     
+    /// Called on the main actor when recording finishes and video is saved.
+    /// Intended for UIKit/SwiftUI view controllers to present the upload screen.
+    var onRecordingFinished: ((URL, String) -> Void)?
+    
     private let cameraManager = CameraManager()
     private var recordingStartTime: Date?
     private var timerTask: Task<Void, Never>?
@@ -51,7 +55,7 @@ class ViewModel {
             while !Task.isCancelled {
                 if let startTime = recordingStartTime {
                     let elapsed = Date().timeIntervalSince(startTime)
-                    await updateElapsedTime(elapsed)
+                    updateElapsedTime(elapsed)
                 }
                 
                 try? await Task.sleep(for: .milliseconds(100))
@@ -76,6 +80,7 @@ class ViewModel {
             if let url = url {
                 Task { @MainActor in
                     self.lastSavedVideoURL = url
+                    self.onRecordingFinished?(url, self.elapsedTime)
                     print("Video saved to: \(url.path)")
                     
                     // Optionally save to Photos library
