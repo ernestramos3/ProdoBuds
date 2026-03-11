@@ -66,7 +66,10 @@ class ViewController: UIViewController {
                 self.errorMsg.text = ""
                 self.password.text = ""
                 self.email.text = ""
-                self.performSegue(withIdentifier: "HomeIdentifier", sender: self)
+                let storyboard = UIStoryboard(name: "HomeScreen", bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: "HomeScreenStoryboardID")
+                vc.modalPresentationStyle = .fullScreen
+                self.present(vc, animated: true)
             }
         }
     }
