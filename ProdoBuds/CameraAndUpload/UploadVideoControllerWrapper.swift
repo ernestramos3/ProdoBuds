@@ -13,6 +13,10 @@ struct UploadVideoControllerWrapper: UIViewControllerRepresentable {
         vc.videoURL = videoURL
         // Ensure full-screen presentation when shown from SwiftUI
         vc.modalPresentationStyle = .fullScreen
+        
+        // Prevent SwiftUI from adding additional safe area insets
+        vc.additionalSafeAreaInsets = .zero
+        
         return vc
     }
     

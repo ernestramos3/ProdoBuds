@@ -96,7 +96,9 @@ class CameraManager: NSObject {
     private func startSession() async {
         guard await isAuthorized else { return }
         
-        captureSession.startRunning()
+        sessionQueue.async { [weak self] in
+            self?.captureSession.startRunning()
+        }
     }
     
     // MARK: - Video Recording

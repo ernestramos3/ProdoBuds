@@ -30,9 +30,13 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
         startVideo()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
     func startVideo() {
         guard let url = videoURL else {
-            print("Error: videoURL is nil") 
+            print("Error: videoURL is nil")
             return
         }
         player = AVPlayer(url: url)

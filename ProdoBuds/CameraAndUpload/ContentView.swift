@@ -18,6 +18,7 @@ struct ContentView: View {
             // Present a UIKit view controller as a full screen cover when recording is finished
             .fullScreenCover(item: $uploadURL) { url in
                 UploadVideoControllerWrapper(videoURL: url)
+                    .ignoresSafeArea() // Prevent SwiftUI from adding safe area insets
             }
             // Setup the closure to be called when recording finishes
             .onAppear {
