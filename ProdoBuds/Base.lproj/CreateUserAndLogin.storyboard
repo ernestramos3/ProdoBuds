@@ -399,7 +399,7 @@
                                 <color key="textColor" systemColor="systemGreenColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="28C-lN-gVv">
+                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Enter Bio Here" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="28C-lN-gVv">
                                 <rect key="frame" x="77" y="263" width="287" height="34"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -419,7 +419,7 @@
                     <connections>
                         <outlet property="bio" destination="28C-lN-gVv" id="Wt5-3m-9oK"/>
                         <outlet property="errorMsg" destination="5mt-Cx-Iaw" id="fpK-Bv-KNb"/>
-                        <segue destination="BYZ-38-t0r" kind="presentation" identifier="cancel4" id="zoQ-Q2-1zp"/>
+                        <segue destination="BYZ-38-t0r" kind="presentation" identifier="cancel4" modalPresentationStyle="fullScreen" id="zoQ-Q2-1zp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ATx-DL-lFf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -492,7 +492,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="E4v-L1-yir"/>
+        <segue reference="zeg-QY-VGd"/>
     </inferredMetricsTieBreakers>
     <resources>
         <systemColor name="labelColor">
