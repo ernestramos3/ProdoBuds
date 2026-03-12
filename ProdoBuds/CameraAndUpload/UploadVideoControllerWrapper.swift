@@ -8,7 +8,7 @@ struct UploadVideoControllerWrapper: UIViewControllerRepresentable {
     
     func makeUIViewController(context: Context) -> UploadVideoViewController {
         print("UploadVideoControllerWrapper: makeUIViewController called")
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let storyboard = UIStoryboard(name: "CameraAndUpload", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "UploadVideoViewControllerID") as! UploadVideoViewController
         vc.videoURL = videoURL
         // Ensure full-screen presentation when shown from SwiftUI

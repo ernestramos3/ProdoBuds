@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class HomeTabController: UITabBarController, UITabBarControllerDelegate {
 
@@ -16,7 +17,15 @@ class HomeTabController: UITabBarController, UITabBarControllerDelegate {
     
     func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool{
         
-        if let index = viewControllers?.firstIndex(of: viewController), index == 1{ return true}
+        if let index = viewControllers?.firstIndex(of: viewController), index == 1{
+            let view = ContentView()
+            let hostingController = UIHostingController(rootView: view)
+            hostingController.modalPresentationStyle = .fullScreen
+            
+            present(hostingController, animated: true, completion: nil)
+            
+            return false
+        }
         
         return true 
     }
