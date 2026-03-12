@@ -24,14 +24,8 @@ struct CameraView: View {
                         
                         // Calculate scale factors
                         let scaleX = containerSize.width / rotatedImageSize.width
-                        let scaleY = containerSize.height / rotatedImageSize.height
                         
-                        // Choose your scaling strategy:
-                        // - min(scaleX, scaleY) for fit behavior (entire image visible)
-                        // - max(scaleX, scaleY) for fill behavior (no gaps)
-                        // - average for something in between
-                        // - or a custom value like scaleX to fill width
-                        let scale = scaleX // Change this to experiment!
+                        let scale = scaleX
                         
                         Image(decorative: image, scale: 1)
                             .resizable()
