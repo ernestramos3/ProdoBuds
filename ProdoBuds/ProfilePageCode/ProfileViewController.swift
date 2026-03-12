@@ -6,47 +6,60 @@
 //
 
 import UIKit
-
-class ProfileViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+//class ProfileViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class ProfileViewController: UIViewController {
     
-    var collectionView: UICollectionView!
-
+    
+    //var collectionView: UICollectionView!
+    @IBOutlet weak var followingCount: UILabel!
+    @IBOutlet weak var followerCount: UILabel!
+    @IBOutlet weak var username: UILabel!
+    @IBOutlet weak var bio: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        let layout = UICollectionViewFlowLayout()
-        let screenWidth = UIScreen.main.bounds.width
-        let spacing: CGFloat = 2
-        let itemSize = (screenWidth - (spacing * 2)) / 3
+        //let layout = UICollectionViewFlowLayout()
+        //let screenWidth = UIScreen.main.bounds.width
+        //let spacing: CGFloat = 2
+        //let itemSize = (screenWidth - (spacing * 2)) / 3
         
-        layout.itemSize = CGSize(width: itemSize, height: itemSize)
-        layout.minimumInteritemSpacing = spacing
-        layout.minimumLineSpacing = spacing
         
-        collectionView = UICollectionView(frame: view.frame, collectionViewLayout: layout)
-        collectionView.backgroundColor = .white
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
-        view.addSubview(collectionView)
+        //layout.itemSize = CGSize(width: itemSize, height: itemSize)
+        //layout.minimumInteritemSpacing = spacing
+        //layout.minimumLineSpacing = spacing
         
+        //populate fields with data from the database
+        //UserSession.shared.currentUser?
+        followingCount.text = "0"
+        followerCount.text = "0"
+        username.text = UserSession.shared.currentUser?.username
+        bio.text = UserSession.shared.currentUser?.bio
+        
+        //collectionView = UICollectionView(frame: view.frame, collectionViewLayout: layout)
+        //collectionView.backgroundColor = .white
+        //collectionView.dataSource = self
+        //collectionView.delegate = self
+        //collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+        //view.addSubview(collectionView)
+        print("running")
     }
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 9
-    }
+    //func collectionView(_ collectionView: UICollectionView, //numberOfItemsInSection section: Int) -> Int {
+        //return 9
+    //}
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-        let imageView = UIImageView(frame: cell.contentView.frame)
-        imageView.image = UIImage(named: "exampleImage")
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        cell.contentView.addSubview(imageView)
+    //func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    //    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+    //    let imageView = UIImageView(frame: cell.contentView.frame)
+    //    imageView.image = UIImage(named: "exampleImage")
+    //    imageView.contentMode = .scaleAspectFill
+    //    imageView.clipsToBounds = true
+    //    cell.contentView.addSubview(imageView)
         
-        return cell
-    }
+    //    return cell
+    //}
 
     /*
     // MARK: - Navigation
