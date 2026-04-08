@@ -8,6 +8,7 @@
 // this class is used to easily access the user inputs when theya re making an account
 
 import Foundation
+import UIKit
 
 class SignupData {
     static let shared = SignupData()
@@ -17,7 +18,7 @@ class SignupData {
     var username: String = ""
     var bio: String = ""
     var preferences: [String] = []
-    var profileImageURL: String = ""
+    var profileImage: UIImage?
     
     public init() { }
     
@@ -27,6 +28,6 @@ class SignupData {
         username = ""
         bio = ""
         preferences = []
-        profileImageURL = ""
+        profileImage = nil
     }
 }

@@ -7,12 +7,13 @@
 
 import UIKit
 
-class BioViewController: UIViewController {
+class BioViewController: UIViewController, UITextFieldDelegate{
     
     @IBOutlet weak var bio: UITextField!
     @IBOutlet weak var errorMsg: UILabel!
     override func viewDidLoad() {
         super.viewDidLoad()
+        bio.delegate = self
 
         
         // Do any additional setup after loading the view.
@@ -54,5 +55,17 @@ class BioViewController: UIViewController {
         present(controller, animated: true)
 
     }
+    
+    func textFieldShouldReturn(_ textField:UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    // Called when the user clicks on the view outside of the UITextField
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+
 
 }
