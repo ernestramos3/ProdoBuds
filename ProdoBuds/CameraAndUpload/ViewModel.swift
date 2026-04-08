@@ -73,21 +73,19 @@ class ViewModel {
         timerTask?.cancel()
         timerTask = nil
         
-        // Stop actual video recording
+        // Stop actual video recording and pass to UploadVideoView
         cameraManager.stopRecording { [weak self] url in
             guard let self = self else { return }
             
             if let url = url {
                 Task { @MainActor in
                     self.lastSavedVideoURL = url
+                    // Pass video URL to UploadVideoView where user can draft or upload
                     self.onRecordingFinished?(url)
-                    print("Video saved to: \(url.path)")
-                    
-                    // Optionally save to Photos library
-                    await self.saveToPhotosLibrary(url: url)
+                    print("Video recorded at: \(url.path)")
                 }
             } else {
-                print("Failed to save video")
+                print("Failed to record video")
             }
         }
         
