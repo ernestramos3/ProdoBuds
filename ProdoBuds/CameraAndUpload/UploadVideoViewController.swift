@@ -108,6 +108,9 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
             
             print("Upload successful!")
             
+            // Delete the local video file after successful upload
+            deleteLocalVideo()
+            
             // Navigate to home screen
             await MainActor.run {
                 let storyboard = UIStoryboard(name: "HomeScreen", bundle: nil)
@@ -127,6 +130,24 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
                 controller.addAction(UIAlertAction(title: "OK", style: .default))
                 self.present(controller, animated: true)
             }
+        }
+    }
+    
+    private func deleteLocalVideo() {
+        guard let url = videoURL else {
+            print("No video URL to delete")
+            return
+        }
+        
+        do {
+            if FileManager.default.fileExists(atPath: url.path) {
+                try FileManager.default.removeItem(at: url)
+                print("Local video file deleted successfully: \(url.path)")
+            } else {
+                print("Video file doesn't exist at path: \(url.path)")
+            }
+        } catch {
+            print("Failed to delete local video file: \(error.localizedDescription)")
         }
     }
     
