@@ -8,6 +8,15 @@
 import UIKit
 import AVFoundation
 import AVKit
+import Photos
+import FirebaseCore
+import FirebaseFirestore
+import FirebaseStorage
+
+func generateRandomString(length: Int) -> String {
+    let letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+    return String((0..<length).map { _ in letters.randomElement()! })
+}
 
 class UploadVideoViewController: UIViewController, UITextFieldDelegate {
 
@@ -18,6 +27,8 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
     var player: AVPlayer!
     var avpController = AVPlayerViewController()
     var videoURL: URL!
+    
+    var privacy: String = "public"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,16 +72,189 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
     }
 
     @IBAction func uploadVideo(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "HomeScreen", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "HomeScreenStoryboardID")
-        vc.modalPresentationStyle = .fullScreen
-        self.present(vc, animated: true)
+        Task {
+            await performUpload()
+        }
+    }
+    
+    private func performUpload() async {
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+        
+        let randomString = "videos/\(generateRandomString(length: 10))"
+        let videoRef = storageRef.child(randomString)
+        
+        let metadata = StorageMetadata()
+        metadata.contentType = "video/quicktime"
+        
+        do {
+            // Upload video
+            let _ = try await videoRef.putFileAsync(from: videoURL, metadata: metadata)
+            
+            // Get download URL
+            let downloadURL = try await videoRef.downloadURL()
+            
+            // Create Firestore document
+            let db = Firestore.firestore()
+            try await db.collection("posts").addDocument(data: [
+                "description": captionField.text ?? "",
+                "likes": [],
+                "tagged_users": [],
+                "user": UserSession.shared.currentUser?.username ?? "",
+                "videoURL": downloadURL.absoluteString,
+                "privacy": privacy,
+                "timestamp": FieldValue.serverTimestamp()
+            ])
+            
+            print("Upload successful!")
+            
+            // Delete the local video file after successful upload
+            deleteLocalVideo()
+            
+            // Navigate to home screen
+            await MainActor.run {
+                let storyboard = UIStoryboard(name: "HomeScreen", bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: "HomeScreenStoryboardID")
+                vc.modalPresentationStyle = .fullScreen
+                self.present(vc, animated: true)
+            }
+            
+        } catch {
+            print("Upload failed: \(error.localizedDescription)")
+            // Show error to user
+            await MainActor.run {
+                let controller = UIAlertController(
+                    title: "Upload Failed",
+                    message: "There was an error uploading your video. Please try again.",
+                    preferredStyle: .alert)
+                controller.addAction(UIAlertAction(title: "OK", style: .default))
+                self.present(controller, animated: true)
+            }
+        }
+    }
+    
+    private func deleteLocalVideo() {
+        guard let url = videoURL else {
+            print("No video URL to delete")
+            return
+        }
+        
+        do {
+            if FileManager.default.fileExists(atPath: url.path) {
+                try FileManager.default.removeItem(at: url)
+                print("Local video file deleted successfully: \(url.path)")
+            } else {
+                print("Video file doesn't exist at path: \(url.path)")
+            }
+        } catch {
+            print("Failed to delete local video file: \(error.localizedDescription)")
+        }
     }
     
     @IBAction func draftVideo(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "HomeScreen", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: "HomeScreenStoryboardID")
-        vc.modalPresentationStyle = .fullScreen
-        self.present(vc, animated: true)
+        // Save video to Photos library when drafting
+        if let url = videoURL {
+            Task {
+                await saveDraftToPhotosLibrary(url: url)
+                
+                // Navigate to home screen
+                await MainActor.run {
+                    let storyboard = UIStoryboard(name: "HomeScreen", bundle: nil)
+                    let vc = storyboard.instantiateViewController(withIdentifier: "HomeScreenStoryboardID")
+                    vc.modalPresentationStyle = .fullScreen
+                    self.present(vc, animated: true)
+                }
+            }
+        } else {
+            // Navigate to home screen even if no video URL
+            let storyboard = UIStoryboard(name: "HomeScreen", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "HomeScreenStoryboardID")
+            vc.modalPresentationStyle = .fullScreen
+            self.present(vc, animated: true)
+        }
+    }
+    
+    private func saveDraftToPhotosLibrary(url: URL) async {
+        let status = PHPhotoLibrary.authorizationStatus(for: .addOnly)
+        
+        var authorized = status == .authorized
+        
+        if status == .notDetermined {
+            authorized = await PHPhotoLibrary.requestAuthorization(for: .addOnly) == .authorized
+        }
+        
+        guard authorized else {
+            print("Photo library access denied")
+            return
+        }
+        
+        do {
+            try await PHPhotoLibrary.shared().performChanges {
+                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
+            }
+            print("Draft video saved to Photos library successfully")
+        } catch {
+            print("Failed to save draft video to Photos library: \(error.localizedDescription)")
+        }
+    }
+    
+    @IBAction func selectMusic(_ sender: Any) {
+        makePopup(popupMessage: "Music has not been added yet.")
+    }
+    
+    @IBAction func selectPrivacy(_ sender: Any) {
+        let controller = UIAlertController(title: "Privacy", message: "Who can see this video:", preferredStyle: .actionSheet)
+        
+        let publicAction = UIAlertAction(title: "Public", style: .default) { _ in
+            self.privacy = "public"
+        }
+        
+        let friendsAction = UIAlertAction(title: "Friends Only", style: .default) { _ in
+            self.privacy = "friends"
+        }
+        
+        let privateAction = UIAlertAction(title: "Private", style: .default) { _ in
+            self.privacy = "private"
+        }
+        
+        controller.addAction(publicAction)
+        controller.addAction(friendsAction)
+        controller.addAction(privateAction)
+        
+        present(controller, animated: true)
+    }
+    
+    @IBAction func selectMentions(_ sender: Any) {
+        // work on adding tagged users
+        let controller = UIAlertController(title: "Tags", message: "Add users:", preferredStyle: .actionSheet)
+        
+        controller.addTextField { textField in
+            textField.placeholder = "@orlando, @redial"
+            textField.autocapitalizationType = .words
+        }
+        
+        controller.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            let text = controller.textFields?.first?.text ?? ""
+            print("Entered: \(text)")
+        })
+
+        controller.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        present(controller, animated: true)
+    }
+    
+    @IBAction func selectVoiceover(_ sender: Any) {
+        makePopup(popupMessage: "Voiceover has not been added yet.")
+    }
+    
+    func makePopup(popupMessage:String) {
+        let controller = UIAlertController(
+                title: "Coming soon!",
+                message: popupMessage,
+                preferredStyle: .alert)
+            
+        controller.addAction(UIAlertAction(title: "OK", style: .default))
+            
+        present(controller,animated:true)
     }
 }

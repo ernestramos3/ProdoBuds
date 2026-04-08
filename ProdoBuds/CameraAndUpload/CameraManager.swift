@@ -26,6 +26,11 @@ class CameraManager: NSObject {
     private var isRecording = false
     private var recordingStartTime: CMTime?
     private var outputURL: URL?
+    private var frameCount: Int = 0
+    
+    // Timelapse settings
+    private let captureFPS: Int32 = 5  // Frames captured per second
+    private let playbackFPS: Int32 = 30  // Frames played back per second
 
     private var isAuthorized: Bool {
         get async {
@@ -76,6 +81,30 @@ class CameraManager: NSObject {
             self.captureSession.commitConfiguration()
         }
         
+        // Configure device for lower frame rate (timelapse)
+        do {
+            try systemPreferredCamera.lockForConfiguration()
+            
+            // Check supported frame rates
+            if let format = systemPreferredCamera.activeFormat.videoSupportedFrameRateRanges.first {
+                print("Supported frame rate range: \(format.minFrameRate) - \(format.maxFrameRate) fps")
+            }
+            
+            // Set to lower frame rate for timelapse effect
+            // Using 5 fps for a more dramatic timelapse
+            let targetFPS: Int32 = 5
+            systemPreferredCamera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: targetFPS)
+            systemPreferredCamera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: targetFPS)
+            
+            print("Camera configured for timelapse at \(targetFPS) fps")
+            print("Actual min duration: \(systemPreferredCamera.activeVideoMinFrameDuration)")
+            print("Actual max duration: \(systemPreferredCamera.activeVideoMaxFrameDuration)")
+            
+            systemPreferredCamera.unlockForConfiguration()
+        } catch {
+            print("Failed to configure camera frame rate: \(error)")
+        }
+        
         let videoOutput = AVCaptureVideoDataOutput()
         videoOutput.setSampleBufferDelegate(self, queue: sessionQueue)
         
@@ -97,7 +126,34 @@ class CameraManager: NSObject {
         guard await isAuthorized else { return }
         
         sessionQueue.async { [weak self] in
-            self?.captureSession.startRunning()
+            guard let self = self else { return }
+            self.captureSession.startRunning()
+            
+            // Configure frame rate AFTER session starts to prevent AVFoundation from overriding it
+            guard let camera = self.systemPreferredCamera else { return }
+            
+            do {
+                try camera.lockForConfiguration()
+                
+                // Check supported frame rates
+                if let format = camera.activeFormat.videoSupportedFrameRateRanges.first {
+                    print("Supported frame rate range: \(format.minFrameRate) - \(format.maxFrameRate) fps")
+                }
+                
+                // Set to lower frame rate for timelapse effect
+                let targetFPS: Int32 = 5
+                camera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: targetFPS)
+                camera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: targetFPS)
+                
+                print("Camera configured for timelapse at \(targetFPS) fps (after session start)")
+                print("Will play back at 30 fps for \(30/targetFPS)x speed")
+                print("Actual min duration: \(camera.activeVideoMinFrameDuration)")
+                print("Actual max duration: \(camera.activeVideoMaxFrameDuration)")
+                
+                camera.unlockForConfiguration()
+            } catch {
+                print("Failed to configure camera frame rate: \(error)")
+            }
         }
     }
     
@@ -135,14 +191,17 @@ class CameraManager: NSObject {
                 return
             }
             
-            // Configure video settings
+            // Configure video settings for timelapse playback
+            // Capture at 5fps but encode for 30fps playback = 6x speed
             let videoSettings: [String: Any] = [
                 AVVideoCodecKey: AVVideoCodecType.h264,
                 AVVideoWidthKey: 1920,
                 AVVideoHeightKey: 1080,
                 AVVideoCompressionPropertiesKey: [
                     AVVideoAverageBitRateKey: 6000000,
-                    AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel
+                    AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel,
+                    AVVideoExpectedSourceFrameRateKey: 30,  // Playback frame rate
+                    AVVideoMaxKeyFrameIntervalKey: 30       // One keyframe per second at 30fps
                 ]
             ]
             
@@ -163,8 +222,9 @@ class CameraManager: NSObject {
             self.assetWriterInput = assetWriterInput
             self.isRecording = true
             self.recordingStartTime = nil
+            self.frameCount = 0
             
-            print("Recording setup complete, ready to write")
+            print("Recording setup complete, ready to write at \(self.captureFPS) fps → \(self.playbackFPS) fps playback")
         }
     }
     
@@ -218,6 +278,7 @@ class CameraManager: NSObject {
                 self.assetWriterInput = nil
                 self.recordingStartTime = nil
                 self.outputURL = nil
+                self.frameCount = 0
             }
         }
     }
@@ -234,20 +295,54 @@ extension CameraManager: AVCaptureVideoDataOutputSampleBufferDelegate {
             guard let assetWriter = assetWriter,
                   let assetWriterInput = assetWriterInput else { return }
             
-            let timestamp = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-            
             // Start writing if this is the first frame
             if recordingStartTime == nil {
-                recordingStartTime = timestamp
+                // Calculate adjusted timestamp for playback speed
+                let adjustedStartTime = CMTime(value: 0, timescale: playbackFPS)
+                recordingStartTime = adjustedStartTime
                 assetWriter.startWriting()
-                assetWriter.startSession(atSourceTime: timestamp)
-                print("Started writing video at timestamp: \(timestamp.seconds)")
+                assetWriter.startSession(atSourceTime: adjustedStartTime)
+                print("Started writing video with \(captureFPS) fps → \(playbackFPS) fps playback")
             }
             
-            // Append the sample buffer
+            // Append the sample buffer with adjusted timestamp
             if assetWriterInput.isReadyForMoreMediaData {
-                assetWriterInput.append(sampleBuffer)
+                // Calculate the presentation time for this frame at playback speed
+                // Each frame should be 1/playbackFPS seconds apart
+                let adjustedTimestamp = CMTime(value: CMTimeValue(frameCount), timescale: playbackFPS)
+                
+                // Create a new sample buffer with the adjusted timestamp
+                if let adjustedBuffer = createAdjustedSampleBuffer(from: sampleBuffer, withPresentationTime: adjustedTimestamp) {
+                    assetWriterInput.append(adjustedBuffer)
+                    frameCount += 1
+                    
+                    if frameCount % 30 == 0 {
+                        let realTime = Double(frameCount) / Double(captureFPS)
+                        let playbackTime = Double(frameCount) / Double(playbackFPS)
+                        print("Frame \(frameCount): \(String(format: "%.1f", realTime))s real → \(String(format: "%.1f", playbackTime))s playback")
+                    }
+                }
             }
         }
+    }
+    
+    private func createAdjustedSampleBuffer(from sampleBuffer: CMSampleBuffer, withPresentationTime presentationTime: CMTime) -> CMSampleBuffer? {
+        var timingInfo = CMSampleTimingInfo(
+            duration: CMTime(value: 1, timescale: playbackFPS),
+            presentationTimeStamp: presentationTime,
+            decodeTimeStamp: .invalid
+        )
+        
+        var adjustedSampleBuffer: CMSampleBuffer?
+        
+        CMSampleBufferCreateCopyWithNewTiming(
+            allocator: kCFAllocatorDefault,
+            sampleBuffer: sampleBuffer,
+            sampleTimingEntryCount: 1,
+            sampleTimingArray: &timingInfo,
+            sampleBufferOut: &adjustedSampleBuffer
+        )
+        
+        return adjustedSampleBuffer
     }
 }
