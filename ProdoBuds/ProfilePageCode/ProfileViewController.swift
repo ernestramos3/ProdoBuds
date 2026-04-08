@@ -93,7 +93,12 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
                 }
                 
                 group.notify(queue: .main) {
-                    currentUserPosts = fetchedPosts
+                    let sortedPosts = fetchedPosts.sorted {
+                        ($0.timestamp?.dateValue() ?? Date.distantPast) > ($1.timestamp?.dateValue() ?? Date.distantPast)
+                    }
+                    
+                    currentUserPosts = sortedPosts
+                    
                     self.profileView.reloadData()
                 }
             }

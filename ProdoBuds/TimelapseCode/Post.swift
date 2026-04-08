@@ -5,12 +5,15 @@
 //  Created by Trinh, Andy on 4/1/26.
 //
 
+import FirebaseFirestore
+
 class Post {
     var user:String
     var description:String
     var likes:[String] // list of usernames that like posts
     var taggedUsers:[String]
     var videoLink:String
+    var timestamp:Timestamp?
     
     //var comments:Dictionary<String, [String]>
     
@@ -23,6 +26,7 @@ class Post {
         self.likes = dictionary["likes"] as? [String] ?? []
         self.taggedUsers = dictionary["tagged_users"] as? [String] ?? []
         self.videoLink = dictionary["videoURL"] as? String ?? ""
+        self.timestamp = dictionary["timestamp"] as? Timestamp
         //self.comments = [:]
     }
     
