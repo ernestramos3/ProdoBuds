@@ -5,8 +5,6 @@
 //  Created by Trinh, Andy on 3/11/26.
 //
 
-var currentUserPosts:[Post] = []
-
 import UIKit
 import FirebaseFirestore
 import FirebaseStorage
@@ -14,47 +12,60 @@ import FirebaseStorage
 class ProfileViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     @IBOutlet weak var profileView: UICollectionView!
     
+    var userToLoad:String?
+    var currentUserPosts:[Post] = []
+    var profileOwnerData:[String: Any]?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        var targetedUser = userToLoad ?? UserSession.shared.currentUser?.username ?? ""
         
         profileView.delegate = self
         profileView.dataSource = self
         
-//        let layout = UICollectionViewFlowLayout()
-//        layout.minimumInteritemSpacing = 1
-//        layout.minimumLineSpacing = 1
-//        profileView.collectionViewLayout = layout
-        
         if let layout = profileView.collectionViewLayout as? UICollectionViewFlowLayout {
-            let padding: CGFloat = 2
-//            let totalPadding = padding
-//            let individualWidth = (view.frame.width - totalPadding) / 3
-//            
-//            layout.itemSize = CGSize(width: individualWidth, height: individualWidth)
-            
-            layout.minimumLineSpacing = padding
-            layout.minimumInteritemSpacing = padding
-//            layout.sectionInset = UIEdgeInsets(top: padding, left: padding, bottom: padding, right: padding)
+            layout.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+            layout.minimumInteritemSpacing = 2
+            layout.minimumLineSpacing = 2
         }
         
         // Do any additional setup after loading the view.
-        fetchPosts()
+        fetchProfileData(username: targetedUser)
+        fetchPosts(username: targetedUser)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        fetchPosts()
+        //fetchPosts()
     }
     
-    func fetchPosts() {
-        guard let currentUsername = UserSession.shared.currentUser?.username else { return }
+    func fetchProfileData(username: String) {
+        let db = Firestore.firestore()
         
+        db.collection("users").whereField("username", isEqualTo: username).getDocuments { (snapshot, error) in
+            if let document = snapshot?.documents.first {
+                let data = document.data()
+                self.profileOwnerData = data
+                
+                // reload header info to show new info
+                DispatchQueue.main.async {
+                    self.profileView.reloadItems(at: [IndexPath(item: 0, section: 0)])
+                }
+            }
+            else {
+                print("No user document")
+            }
+        }
+        
+    }
+    
+    func fetchPosts(username: String) {
         let db = Firestore.firestore()
         let storage = Storage.storage()
         
         db.collection("posts")
-            .whereField("user", isEqualTo: currentUsername)
+            .whereField("user", isEqualTo: username)
             .getDocuments { (querySnapshot, error) in
                 if let error = error {
                     print("error in getting documents: \(error)")
@@ -97,7 +108,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
                         ($0.timestamp?.dateValue() ?? Date.distantPast) > ($1.timestamp?.dateValue() ?? Date.distantPast)
                     }
                     
-                    currentUserPosts = sortedPosts
+                    self.currentUserPosts = sortedPosts
                     
                     self.profileView.reloadData()
                 }
@@ -111,39 +122,68 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.item == 0 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProfileHeaderCellIdentifier", for: indexPath) as! ProfileHeaderViewCell
-            // populate fields with data from the database
-            // UserSession.shared.currentUser? - syntax for accessing currentUser fields
+            
+            // determine if this profile of currently logged in user to show/hide follow button
+            let isMe = (userToLoad == nil || userToLoad == UserSession.shared.currentUser?.username)
+            cell.followButton.isHidden = isMe
             
             // because application does not allow users to view other profiles, these fields are hardcoded for now
             cell.followingCountLabel.text = "0"
             cell.followersCountLabel.text = "0"
-                        
-            cell.usernameLabel.text = UserSession.shared.currentUser?.username
-            cell.bioLabel.text = UserSession.shared.currentUser?.bio
             
-            let urlString = UserSession.shared.currentUser?.profileImageURL ?? ""
-            
-            if let url = URL(string: urlString) {
-                cell.profileImage.image = nil
+            if let data = profileOwnerData {
+                cell.usernameLabel.text = data["username"] as? String
+                cell.bioLabel.text = data["bio"] as? String
                 
-                URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-                    if let data = data, let image = UIImage(data: data) {
-                        DispatchQueue.main.async {
-                            cell.profileImage.image = image
+                let urlString = data["profileImageURL"] as? String ?? ""
+                
+                cell.profileImage.image = UIImage(systemName: "person.circle.fill")
+                if let url = URL(string: urlString) {
+                    cell.profileImage.image = nil
+                    
+                    URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+                        if let data = data, let image = UIImage(data: data) {
+                            DispatchQueue.main.async {
+                                cell.profileImage.image = image
+                            }
                         }
-                    }
-                }.resume()
+                    }.resume()
+                }
+                
+                cell.profileImage.contentMode = .scaleAspectFill
+                cell.profileImage.clipsToBounds = true
+                
+                cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width / 2
+                cell.profileImage.layer.borderWidth = 1
+                cell.profileImage.layer.borderColor = UIColor.lightGray.cgColor
             }
-            else {
-                cell.profileImage.image = UIImage(named: "yes")
-            }
-            
-            cell.profileImage.contentMode = .scaleAspectFill
-            cell.profileImage.clipsToBounds = true
-            
-            cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width / 2
-            cell.profileImage.layer.borderWidth = 1
-            cell.profileImage.layer.borderColor = UIColor.lightGray.cgColor
+                        
+//            cell.usernameLabel.text = UserSession.shared.currentUser?.username
+//            cell.bioLabel.text = UserSession.shared.currentUser?.bio
+//            
+//            let urlString = UserSession.shared.currentUser?.profileImageURL ?? ""
+//            
+//            if let url = URL(string: urlString) {
+//                cell.profileImage.image = nil
+//                
+//                URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+//                    if let data = data, let image = UIImage(data: data) {
+//                        DispatchQueue.main.async {
+//                            cell.profileImage.image = image
+//                        }
+//                    }
+//                }.resume()
+//            }
+//            else {
+//                cell.profileImage.image = UIImage(systemName: "person.circle.fill")
+//            }
+//            
+//            cell.profileImage.contentMode = .scaleAspectFill
+//            cell.profileImage.clipsToBounds = true
+//            
+//            cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width / 2
+//            cell.profileImage.layer.borderWidth = 1
+//            cell.profileImage.layer.borderColor = UIColor.lightGray.cgColor
             
             return cell
         }
@@ -158,9 +198,13 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
             return CGSize(width: collectionView.frame.width, height: 436)
         }
         
-        let padding: CGFloat = 2
-        let totalPadding = padding * 4
-        let width = floor((collectionView.frame.width - totalPadding) / 3)
+//        let columns: CGFloat = 3
+//        let spacing: CGFloat = 2
+//        let totalSpacing = spacing * (columns - 1)
+//        let width = floor((collectionView.frame.width - totalSpacing) / 3)
+        
+        let availableWidth = collectionView.frame.width - 4
+        let width = floor(availableWidth / 3)
         return CGSize(width: width, height: width)
     }
     

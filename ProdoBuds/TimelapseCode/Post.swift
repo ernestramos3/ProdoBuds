@@ -42,6 +42,16 @@ class Post {
         }
     }
     
+    // returns username
+    func getUser() -> String {
+        return self.user
+    }
+    
+    // returns description
+    func getDescription() -> String {
+        return self.description
+    }
+    
     // for displaying purposes
     func getNumberOfLikes() -> Int {
         return self.likes.count
