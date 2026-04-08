@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AD344B7B2F84E5F500BADDA8 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = AD344B7A2F84E5F500BADDA8 /* FirebaseStorage */; };
 		D67385412F5A9CDD00A53B0B /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = D67385402F5A9CDD00A53B0B /* FirebaseAuth */; };
 		D67385432F5A9CE700A53B0B /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = D67385422F5A9CE700A53B0B /* FirebaseCore */; };
 		D6DE0FBA2F5F945500165DE0 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = D6DE0FB92F5F945500165DE0 /* FirebaseFirestore */; };
@@ -43,6 +44,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D67385432F5A9CE700A53B0B /* FirebaseCore in Frameworks */,
+				AD344B7B2F84E5F500BADDA8 /* FirebaseStorage in Frameworks */,
 				D67385412F5A9CDD00A53B0B /* FirebaseAuth in Frameworks */,
 				D6DE0FBA2F5F945500165DE0 /* FirebaseFirestore in Frameworks */,
 			);
@@ -98,6 +100,7 @@
 				D67385402F5A9CDD00A53B0B /* FirebaseAuth */,
 				D67385422F5A9CE700A53B0B /* FirebaseCore */,
 				D6DE0FB92F5F945500165DE0 /* FirebaseFirestore */,
+				AD344B7A2F84E5F500BADDA8 /* FirebaseStorage */,
 			);
 			productName = ProdoBuds;
 			productReference = 89E1BA622F5A539D009869E1 /* ProdoBuds.app */;
@@ -385,6 +388,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AD344B7A2F84E5F500BADDA8 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D67385232F5A82F700A53B0B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
 		D67385402F5A9CDD00A53B0B /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D67385232F5A82F700A53B0B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
