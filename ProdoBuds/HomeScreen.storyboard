@@ -226,6 +226,9 @@
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="plain" title="Follow"/>
+                                                    <connections>
+                                                        <action selector="followButton2Pressed:" destination="tfk-ii-A1O" eventType="touchUpInside" id="ZkM-am-FvJ"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Bio:" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="itL-9w-hZD">
                                                     <rect key="frame" x="93" y="255" width="255" height="67"/>
@@ -239,6 +242,7 @@
                                         <size key="customSize" width="440" height="436"/>
                                         <connections>
                                             <outlet property="bioLabel" destination="itL-9w-hZD" id="dyU-uh-yYd"/>
+                                            <outlet property="followButton" destination="sDb-1l-eUa" id="hk8-ah-Er6"/>
                                             <outlet property="followersCountLabel" destination="13A-5B-RZ5" id="ICb-aP-BRE"/>
                                             <outlet property="followingCountLabel" destination="b42-nn-xJz" id="cha-iO-FwJ"/>
                                             <outlet property="profileImage" destination="bQv-Jy-6AY" id="yr5-cw-vov"/>

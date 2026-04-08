@@ -199,6 +199,7 @@ class ProfileHeaderViewCell: UICollectionViewCell {
     @IBOutlet weak var bioLabel: UILabel!
     @IBOutlet weak var followingCountLabel: UILabel!
     @IBOutlet weak var followersCountLabel: UILabel!
+    @IBOutlet weak var followButton: UIButton!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -209,6 +210,10 @@ class ProfileHeaderViewCell: UICollectionViewCell {
     }
     
     func configure() {
+        
+    }
+    
+    @IBAction func followButton2Pressed(_ sender: Any) {
         
     }
 }
