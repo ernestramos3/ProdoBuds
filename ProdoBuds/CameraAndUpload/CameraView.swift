@@ -11,6 +11,7 @@ struct CameraView: View {
     
     @Bindable var viewModel: ViewModel
     @State private var showFPSSettings = false
+    @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         GeometryReader { geometry in
@@ -80,9 +81,22 @@ struct CameraView: View {
                 
                 Spacer()
                 // Bottom button area
-                HStack {
+                HStack(spacing: 0) {
+                    // Exit button - Left
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 24, weight: .semibold))
+                            .foregroundColor(.green)
+                            .frame(width: 50, height: 50)
+                    }
+                    .disabled(viewModel.isRecording)
+                    .opacity(viewModel.isRecording ? 0.3 : 1.0)
+                    
                     Spacer()
                     
+                    // Record button - Center
                     Button(action: {
                         viewModel.toggleRecording()
                     }) {
@@ -107,8 +121,20 @@ struct CameraView: View {
                     
                     Spacer()
                     
+                    // Flip camera button - Right
+                    Button(action: {
+                        viewModel.flipCamera()
+                    }) {
+                        Image(systemName: "arrow.triangle.2.circlepath.camera")
+                            .font(.system(size: 24, weight: .semibold))
+                            .foregroundColor(.green)
+                            .frame(width: 50, height: 50)
+                    }
+                    .disabled(viewModel.isRecording)
+                    .opacity(viewModel.isRecording ? 0.3 : 1.0)
                 }
                 .frame(height: geometry.size.height * 0.1)
+                .padding(.horizontal, 20)
             }
         }
         .confirmationDialog("Select Capture FPS", isPresented: $showFPSSettings, titleVisibility: .visible) {

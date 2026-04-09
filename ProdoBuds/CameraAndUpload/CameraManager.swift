@@ -12,9 +12,11 @@ class CameraManager: NSObject {
     
     private let captureSession = AVCaptureSession()
     
-    private var deviceInput: AVCaptureDevice?
+    private var deviceInput: AVCaptureDeviceInput?
     
     private var videoOutput: AVCaptureVideoDataOutput?
+    
+    private var currentCamera: AVCaptureDevice?
     
     private let systemPreferredCamera = AVCaptureDevice.default(for: .video)
     
@@ -75,6 +77,10 @@ class CameraManager: NSObject {
               let deviceInput = try? AVCaptureDeviceInput(device: systemPreferredCamera)
         else { return }
         
+        // Set the current camera
+        currentCamera = systemPreferredCamera
+        self.deviceInput = deviceInput
+        
         captureSession.beginConfiguration()
         
         defer {
@@ -105,6 +111,7 @@ class CameraManager: NSObject {
         
         let videoOutput = AVCaptureVideoDataOutput()
         videoOutput.setSampleBufferDelegate(self, queue: sessionQueue)
+        self.videoOutput = videoOutput
         
         guard captureSession.canAddInput(deviceInput) else {
             print("Unable to add device input to capture session.")
@@ -128,7 +135,7 @@ class CameraManager: NSObject {
             self.captureSession.startRunning()
             
             // Configure frame rate AFTER session starts to prevent AVFoundation from overriding it
-            guard let camera = self.systemPreferredCamera else { return }
+            guard let camera = self.currentCamera else { return }
             
             do {
                 try camera.lockForConfiguration()
@@ -291,7 +298,7 @@ class CameraManager: NSObject {
         captureFPS = fps
         
         // Update camera frame rate if available
-        guard let camera = systemPreferredCamera else { return }
+        guard let camera = currentCamera else { return }
         
         sessionQueue.async { [weak self] in
             guard let self = self else { return }
@@ -308,6 +315,73 @@ class CameraManager: NSObject {
                 camera.unlockForConfiguration()
             } catch {
                 print("Failed to update camera frame rate: \(error)")
+            }
+        }
+    }
+    
+    // MARK: - Camera Control
+    
+    func flipCamera() {
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.captureSession.beginConfiguration()
+            defer { self.captureSession.commitConfiguration() }
+            
+            // Remove current input
+            if let currentInput = self.deviceInput {
+                self.captureSession.removeInput(currentInput)
+            }
+            
+            // Determine new camera position
+            let currentPosition = self.currentCamera?.position ?? .back
+            let newPosition: AVCaptureDevice.Position = currentPosition == .back ? .front : .back
+            
+            // Find camera with new position
+            let discoverySession = AVCaptureDevice.DiscoverySession(
+                deviceTypes: [.builtInWideAngleCamera],
+                mediaType: .video,
+                position: newPosition
+            )
+            
+            guard let newCamera = discoverySession.devices.first else {
+                print("No camera available for position: \(newPosition)")
+                // Re-add the current input if flip fails
+                if let currentInput = self.deviceInput {
+                    self.captureSession.addInput(currentInput)
+                }
+                return
+            }
+            
+            // Create new input
+            do {
+                let newInput = try AVCaptureDeviceInput(device: newCamera)
+                
+                if self.captureSession.canAddInput(newInput) {
+                    self.captureSession.addInput(newInput)
+                    self.deviceInput = newInput
+                    self.currentCamera = newCamera
+                    
+                    // Configure the new camera for timelapse
+                    try newCamera.lockForConfiguration()
+                    newCamera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: self.captureFPS)
+                    newCamera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: self.captureFPS)
+                    newCamera.unlockForConfiguration()
+                    
+                    print("Flipped to \(newPosition == .front ? "front" : "back") camera")
+                } else {
+                    print("Cannot add new camera input")
+                    // Re-add the current input if flip fails
+                    if let currentInput = self.deviceInput {
+                        self.captureSession.addInput(currentInput)
+                    }
+                }
+            } catch {
+                print("Error switching camera: \(error)")
+                // Re-add the current input if flip fails
+                if let currentInput = self.deviceInput {
+                    self.captureSession.addInput(currentInput)
+                }
             }
         }
     }

@@ -129,6 +129,13 @@ class ViewModel {
         return cameraManager.captureFPS
     }
     
+    // MARK: - Camera Control
+    
+    @MainActor
+    func flipCamera() {
+        cameraManager.flipCamera()
+    }
+    
     // MARK: - Photo Library
     
     private func saveToPhotosLibrary(url: URL) async {
