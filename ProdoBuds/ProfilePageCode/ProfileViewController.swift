@@ -37,7 +37,10 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //fetchPosts()
+        
+        let targetedUser = userToLoad ?? UserSession.shared.currentUser?.username ?? ""
+        fetchProfileData(username: targetedUser)
+        fetchPosts(username: targetedUser)
     }
     
     func fetchProfileData(username: String) {
@@ -128,17 +131,22 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
             cell.followButton.isHidden = isMe
             
             // if the user is viewing themselves grab their own following base
-            if(isMe){
+            if isMe {
                 cell.followingCountLabel.text = String(UserSession.shared.currentUser?.following.count ?? 0)
                 cell.followersCountLabel.text = String(UserSession.shared.currentUser?.followers.count ?? 0)
-                
             }
-            // if the user is viewing another persons, grab the person they are viewing following base
-            else{
-                
+            // if the user is viewing another person, grab the person they are viewing following base
+            else {
+                if let data = profileOwnerData {
+                    let followingArray = data["following"] as? [String] ?? []
+                    let followersArray = data["followers"] as? [String] ?? []
+                    cell.followingCountLabel.text = String(followingArray.count)
+                    cell.followersCountLabel.text = String(followersArray.count)
+                } else {
+                    cell.followingCountLabel.text = "0"
+                    cell.followersCountLabel.text = "0"
+                }
             }
-            cell.followingCountLabel.text = "0"
-            cell.followersCountLabel.text = "0"
             
             if let data = profileOwnerData {
                 cell.usernameLabel.text = data["username"] as? String
@@ -272,28 +280,48 @@ class ProfileHeaderViewCell: UICollectionViewCell {
         db.collection("users")
             .whereField("username", isEqualTo: usernameLabel.text ?? "")
             .getDocuments { snapshot, error in
-                if let error = error{
+                if let error = error {
                     print("Error: \(error)")
+                    return
                 }
                 
-                guard let documents = snapshot?.documents, !documents.isEmpty else{
+                guard let documents = snapshot?.documents, !documents.isEmpty else {
                     print("No user was found")
                     return
                 }
                 
                 let doc = documents.first!
                 let data = doc.data()
+                let targetUsername = data["username"] as? String ?? ""
+                let targetUID = doc.documentID
                 
                 // add the user that you are following to your following
                 db.collection("users").document(UserSession.shared.currentUser?.uid ?? "").updateData([
-                    "following": FieldValue.arrayUnion([data["username"] ?? ""])
-                ])
+                    "following": FieldValue.arrayUnion([targetUsername])
+                ]) { error in
+                    if error == nil {
+                        // Update local UserSession with the new following
+                        if var user = UserSession.shared.currentUser,
+                           !user.following.contains(targetUsername) {
+                            user.following.append(targetUsername)
+                            UserSession.shared.currentUser = user
+                        }
+                    }
+                }
                 
-                let targetUID = doc.documentID
-                // add the yourself to the user that you are following followers
+                // add yourself to the user that you are following followers
                 db.collection("users").document(targetUID).updateData([
                     "followers": FieldValue.arrayUnion([UserSession.shared.currentUser?.username ?? ""])
-                ])
+                ]) { error in
+                    if error == nil {
+                        // Update the follower count in the UI
+                        DispatchQueue.main.async {
+                            if let currentCount = Int(self.followersCountLabel.text ?? "0") {
+                                self.followersCountLabel.text = String(currentCount + 1)
+                            }
+                        }
+                    }
+                }
             }
         
     }
