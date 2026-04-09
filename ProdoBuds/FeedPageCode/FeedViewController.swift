@@ -78,6 +78,10 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return globalPosts.count
     }
@@ -107,23 +111,45 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
             .limit(to: 1) // just need one
             .getDocuments { (querySnapshot, error) in
                 guard let document = querySnapshot?.documents.first,
-                      let urlString = document.data()["profileImageURL"] as? String,
-                      let url = URL(string: urlString) else { return }
+                      let profileUrlString = document.data()["profileImageURL"] as? String,
+                      let profileURL = URL(string: profileUrlString) else { return }
 
-
-                    
-                URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-                    if let data = data, let image = UIImage(data: data) {
-                        DispatchQueue.main.async {
-                            if cell.post?.user == specificPost.getUser() {
-                                cell.profileImage.image = image
-                            }
-                        }
+                // download profile picture image
+                self.downloadImage(from: profileURL) { image in
+                    DispatchQueue.main.async {
+                        cell.profileImage.image = image
                     }
-                }.resume()
+                }
             }
         
+        // download thumbnail image
+        if let thumbnailURL = URL(string: specificPost.thumbnailURL) {
+            self.downloadImage(from: thumbnailURL) { image in
+                DispatchQueue.main.async {
+                    cell.thumbnailView.image = image
+                }
+            }
+        }
+        
+//        if specificPost.checkForUserInLikes(username: UserSession.shared.currentUser?.username ?? "") {
+//            cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+//        }
+//        else {
+//            cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+//        }
+        
         return cell
+    }
+    
+    func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            if let data = data {
+                completion(UIImage(data: data))
+            }
+            else {
+                completion(nil)
+            }
+        }.resume()
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -172,6 +198,7 @@ class FeedPostViewCell: UITableViewCell {
     @IBOutlet weak var likeButton: UIButton!
     @IBOutlet weak var numberOfCommentsLabel: UILabel!
     @IBOutlet weak var numberOfLikesLabel: UILabel!
+    @IBOutlet weak var thumbnailView: UIImageView!
     weak var delegate: FeedPostViewCellDelegate?
     var post: Post?
     
@@ -194,6 +221,10 @@ class FeedPostViewCell: UITableViewCell {
         
         profileImage.layer.cornerRadius = profileImage.frame.width / 2
         profileImage.clipsToBounds = true
+    }
+    
+    @IBAction func likeButton2Pressed(_ sender: Any) {
+//        post?.changeLikes(username: UserSession.shared.currentUser?.username ?? "")
     }
 }
 

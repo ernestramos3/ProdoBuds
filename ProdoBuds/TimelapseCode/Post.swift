@@ -17,8 +17,7 @@ class Post {
     
     //var comments:Dictionary<String, [String]>
     
-    // maybe?
-    // var thumbnail:String (url?)
+    var thumbnailURL:String
     
     init(dictionary: [String: Any]) {
         self.user = dictionary["user"] as? String ?? ""
@@ -27,6 +26,7 @@ class Post {
         self.taggedUsers = dictionary["tagged_users"] as? [String] ?? []
         self.videoLink = dictionary["videoURL"] as? String ?? ""
         self.timestamp = dictionary["timestamp"] as? Timestamp
+        self.thumbnailURL = dictionary["thumbnailURL"] as? String ?? ""
         //self.comments = [:]
     }
     
@@ -60,6 +60,10 @@ class Post {
     // returns URL
     func getVideoURL() -> String {
         return self.videoLink
+    }
+    
+    func checkForUserInLikes(username:String) -> Bool {
+        return self.likes.contains(username)
     }
     
     // add new comment to post from username
