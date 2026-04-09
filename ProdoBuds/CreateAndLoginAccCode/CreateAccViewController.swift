@@ -9,7 +9,7 @@ import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 
-class CreateAccViewController: UIViewController {
+class CreateAccViewController: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var errorMsg: UILabel!
     @IBOutlet weak var passwordRetyped: UITextField!
@@ -18,6 +18,9 @@ class CreateAccViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        passwordRetyped.delegate = self
+        password.delegate = self
+        email.delegate = self
 
         // Do any additional setup after loading the view.
     }
@@ -64,6 +67,17 @@ class CreateAccViewController: UIViewController {
         controller.addAction(yes)
         controller.addAction(no)
         present(controller, animated: true)
+    }
+    
+    func textFieldShouldReturn(_ textField:UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    // Called when the user clicks on the view outside of the UITextField
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
     }
     
     /*

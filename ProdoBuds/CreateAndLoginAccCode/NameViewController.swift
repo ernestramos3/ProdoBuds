@@ -8,9 +8,10 @@
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseStorage
 
 
-class NameViewController: UIViewController {
+class NameViewController: UIViewController, UITextFieldDelegate{
 
     @IBOutlet weak var errorMsg: UILabel!
     @IBOutlet weak var username: UITextField!
@@ -18,54 +19,73 @@ class NameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        username.delegate = self
     }
     
     
     @IBAction func nextButtonPressed(_ sender: Any) {
         guard let name = username.text else { return }
-        
-        // ensures that the name has something
-        if(name.isEmpty){
+        if name.isEmpty {
             errorMsg.text = "Error: Must input a username"
             return
         }
-        
-        // ensures the correct size for the username
-        if(name.count < 5){
+        if name.count < 5 {
             errorMsg.text = "Error: Username must be more then 5 characters"
             return
         }
-        if(name.count > 30){
+        if name.count > 30 {
             errorMsg.text = "Error: Username must be under 30 characters"
             return
         }
-        SignupData.shared.username = name
         
+        SignupData.shared.username = name
         Auth.auth().createUser(withEmail: SignupData.shared.email, password: SignupData.shared.password) { result, error in
             if let error = error {
                 print("Signup error: \(error.localizedDescription)")
                 return
             }
-            
-            // acc was succesfully made now need to enter it in the data base
             guard let user = result?.user else { return }
-            let db = Firestore.firestore()
-            db.collection("users").document(user.uid).setData([
-                "username": SignupData.shared.username,
-                "bio": SignupData.shared.bio,
-                "preferences": SignupData.shared.preferences,
-                "email": SignupData.shared.email,
-                "image": SignupData.shared.profileImageURL
-            ]){ error in
+            // first make sure there is an image
+            guard let image = SignupData.shared.profileImage,
+                  let imageData = image.jpegData(compressionQuality: 0.8) else {
+                print("No profile image found")
+                return
+            }
+            // upload image to Firebase Storage
+            let storageRef = Storage.storage().reference()
+            let imageRef = storageRef.child("profile_images/\(user.uid).jpg")
+            imageRef.putData(imageData, metadata: nil) { metadata, error in
                 if let error = error {
-                    print("Firestore error: \(error.localizedDescription)")
-                } else {
-                    // success reset th signupData shared instance
-                    print("User saved")
-                    SignupData.shared.reset()
-                    self.performSegue(withIdentifier: "FinishedCreateAccIdentifier", sender: self)
+                    print("Image upload error: \(error.localizedDescription)")
+                    return
                 }
                 
+                // get the download URL
+                imageRef.downloadURL { url, error in
+                    if let error = error {
+                        print("Download URL error: \(error.localizedDescription)")
+                        return
+                    }
+                    guard let downloadURL = url else { return }
+                    
+                    // now save everything to Firestore
+                    let db = Firestore.firestore()
+                    db.collection("users").document(user.uid).setData([
+                        "username": SignupData.shared.username,
+                        "bio": SignupData.shared.bio,
+                        "preferences": SignupData.shared.preferences,
+                        "email": SignupData.shared.email,
+                        "profileImageURL": downloadURL.absoluteString
+                    ]) { error in
+                        if let error = error {
+                            print("Firestore error: \(error.localizedDescription)")
+                        } else {
+                            print("User saved")
+                            SignupData.shared.reset()
+                            self.performSegue(withIdentifier: "FinishedCreateAccIdentifier", sender: self)
+                        }
+                    }
+                }
             }
         }
     }
@@ -89,6 +109,16 @@ class NameViewController: UIViewController {
     
     
     
+    func textFieldShouldReturn(_ textField:UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    // Called when the user clicks on the view outside of the UITextField
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
 
     /*
     // MARK: - Navigation
