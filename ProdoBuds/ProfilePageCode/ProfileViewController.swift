@@ -214,12 +214,12 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PostGridCellIdentifier", for: indexPath) as! PostGridViewCell
         
         var specificPost = currentUserPosts[indexPath.item - 1]
-        
+                
         // download thumbnail image
         if let thumbnailURL = URL(string: specificPost.thumbnailURL) {
             self.downloadImage(from: thumbnailURL) { image in
                 DispatchQueue.main.async {
-                    cell.postImageView.image = image
+                    cell.postImageView?.image = image
                 }
             }
         }

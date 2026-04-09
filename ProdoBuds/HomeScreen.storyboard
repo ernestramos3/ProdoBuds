@@ -129,7 +129,7 @@
                                             <outlet property="numberOfCommentsLabel" destination="B4o-bw-CSI" id="6WK-0a-xTa"/>
                                             <outlet property="numberOfLikesLabel" destination="icA-o3-xoz" id="gTs-8x-Rz0"/>
                                             <outlet property="profileImage" destination="8BE-2I-xfE" id="Ewy-AX-31g"/>
-                                            <outlet property="thumbnailView" destination="9Mp-aA-NS0" id="1ii-Og-3X4"/>
+                                            <outlet property="thumbnailView" destination="9Mp-aA-NS0" id="PIB-qf-3QE"/>
                                             <outlet property="usernameLabel" destination="Abl-aB-oF0" id="e1d-uI-xW2"/>
                                         </connections>
                                     </tableViewCell>
@@ -288,7 +288,7 @@
                                         <color key="backgroundColor" white="0.66666666669999997" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <size key="customSize" width="130" height="128"/>
                                         <connections>
-                                            <outlet property="postImageView" destination="2fo-oj-HqV" id="OdB-jc-Ftn"/>
+                                            <outlet property="postImageView" destination="2fo-oj-HqV" id="n2G-jH-d1h"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
