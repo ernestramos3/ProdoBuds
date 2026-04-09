@@ -38,7 +38,7 @@ class TimelapseViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return 2 // comments were implemented so this is hardcoded
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -66,8 +66,6 @@ class TimelapseViewController: UIViewController, UITableViewDelegate, UITableVie
                 else {
                     cell.profileImage.image = UIImage(systemName: "person.circle.fill")
                 }
-                
-                
                 
                 cell.descriptionLabel.text = post?.description ?? "unknown"
                 
@@ -101,6 +99,7 @@ class TimelapseViewController: UIViewController, UITableViewDelegate, UITableVie
         return 120
     }
     
+    // show keyboard
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
             let keyboardHeight = keyboardFrame.cgRectValue.height
@@ -115,6 +114,7 @@ class TimelapseViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    // hide keyboard
     @objc func keyboardWillHide(notification: NSNotification) {
         // return comment to bottom safe area
         commentBarBottomConstraint.constant = 0
@@ -126,7 +126,6 @@ class TimelapseViewController: UIViewController, UITableViewDelegate, UITableVie
 }
 
 class TimelapseHeaderViewCell: UITableViewCell {
-    
     @IBOutlet weak var profileImage: UIImageView!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var videoContainerView: UIView!

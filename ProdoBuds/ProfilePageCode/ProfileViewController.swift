@@ -67,6 +67,7 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
         let db = Firestore.firestore()
         let storage = Storage.storage()
         
+        // query into database to fetch posts made by user of the current profile being viewed
         db.collection("posts")
             .whereField("user", isEqualTo: username)
             .getDocuments { (querySnapshot, error) in
@@ -148,7 +149,8 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
                     let followersArray = data["followers"] as? [String] ?? []
                     cell.followingCountLabel.text = String(followingArray.count)
                     cell.followersCountLabel.text = String(followersArray.count)
-                } else {
+                }
+                else {
                     cell.followingCountLabel.text = "0"
                     cell.followersCountLabel.text = "0"
                 }
@@ -180,33 +182,6 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
                 cell.profileImage.layer.borderWidth = 1
                 cell.profileImage.layer.borderColor = UIColor.lightGray.cgColor
             }
-                        
-//            cell.usernameLabel.text = UserSession.shared.currentUser?.username
-//            cell.bioLabel.text = UserSession.shared.currentUser?.bio
-//            
-//            let urlString = UserSession.shared.currentUser?.profileImageURL ?? ""
-//            
-//            if let url = URL(string: urlString) {
-//                cell.profileImage.image = nil
-//                
-//                URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-//                    if let data = data, let image = UIImage(data: data) {
-//                        DispatchQueue.main.async {
-//                            cell.profileImage.image = image
-//                        }
-//                    }
-//                }.resume()
-//            }
-//            else {
-//                cell.profileImage.image = UIImage(systemName: "person.circle.fill")
-//            }
-//            
-//            cell.profileImage.contentMode = .scaleAspectFill
-//            cell.profileImage.clipsToBounds = true
-//            
-//            cell.profileImage.layer.cornerRadius = cell.profileImage.frame.width / 2
-//            cell.profileImage.layer.borderWidth = 1
-//            cell.profileImage.layer.borderColor = UIColor.lightGray.cgColor
             
             return cell
         }
@@ -242,11 +217,6 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
         if indexPath.item == 0 {
             return CGSize(width: collectionView.frame.width, height: 436)
         }
-        
-//        let columns: CGFloat = 3
-//        let spacing: CGFloat = 2
-//        let totalSpacing = spacing * (columns - 1)
-//        let width = floor((collectionView.frame.width - totalSpacing) / 3)
         
         let availableWidth = collectionView.frame.width - 4
         let width = floor(availableWidth / 3)

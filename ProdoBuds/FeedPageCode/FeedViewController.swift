@@ -27,6 +27,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
         let db = Firestore.firestore()
         let storage = Storage.storage()
         
+        // query into database
         db.collection("posts")
             .getDocuments { (querySnapshot, error) in
                 if let error = error {
@@ -106,6 +107,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         let db = Firestore.firestore()
         
+        // query into database for profile picture of user who made the specific post
         db.collection("users")
             .whereField("user", isEqualTo: specificPost.getUser())
             .limit(to: 1) // just need one
@@ -141,6 +143,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
         return cell
     }
     
+    // download image helper method
     func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
         URLSession.shared.dataTask(with: url) { data, _, _ in
             if let data = data {
@@ -158,10 +161,12 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
         performSegue(withIdentifier: "TimelapseSegueIdentifier", sender: selectedPost)
     }
     
+    // protocol for tapping profile picture
     func didTapProfile(for username: String) {
         performSegue(withIdentifier: "ProfileSegueIdentifier", sender: username)
     }
     
+    // segues to prepare
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ProfileSegueIdentifier", let destinationVC = segue.destination as? ProfileViewController, let username = sender as? String {
             
@@ -185,13 +190,13 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
     }
     
+    // height of table row
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 750
     }
 }
 
 class FeedPostViewCell: UITableViewCell {
-    
     @IBOutlet weak var profileImage: UIImageView!
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
@@ -210,6 +215,7 @@ class FeedPostViewCell: UITableViewCell {
         profileImage.addGestureRecognizer(tap)
     }
     
+    // method for handling profile pic tap
     @objc func handleProfileTap() {
         if let username = post?.user {
             delegate?.didTapProfile(for: username)
@@ -228,7 +234,7 @@ class FeedPostViewCell: UITableViewCell {
     }
 }
 
-
+// protocol for tapping the profile picture
 protocol FeedPostViewCellDelegate: AnyObject {
     func didTapProfile(for username: String)
 }

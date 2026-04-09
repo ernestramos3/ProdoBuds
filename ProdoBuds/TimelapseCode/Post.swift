@@ -62,12 +62,8 @@ class Post {
         return self.videoLink
     }
     
+    // check for username in list of likes
     func checkForUserInLikes(username:String) -> Bool {
         return self.likes.contains(username)
     }
-    
-    // add new comment to post from username
-    //func addComments(comment:String, username:String) {
-        //self.comments[username, default: []].append(comment)
-    //}
 }
