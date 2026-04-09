@@ -127,7 +127,16 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
             let isMe = (userToLoad == nil || userToLoad == UserSession.shared.currentUser?.username)
             cell.followButton.isHidden = isMe
             
-            // because application does not allow users to view other profiles, these fields are hardcoded for now
+            // if the user is viewing themselves grab their own following base
+            if(isMe){
+                cell.followingCountLabel.text = String(UserSession.shared.currentUser?.following.count ?? 0)
+                cell.followersCountLabel.text = String(UserSession.shared.currentUser?.followers.count ?? 0)
+                
+            }
+            // if the user is viewing another persons, grab the person they are viewing following base
+            else{
+                
+            }
             cell.followingCountLabel.text = "0"
             cell.followersCountLabel.text = "0"
             
@@ -258,6 +267,34 @@ class ProfileHeaderViewCell: UICollectionViewCell {
     }
     
     @IBAction func followButton2Pressed(_ sender: Any) {
+        let db = Firestore.firestore()
+        
+        db.collection("users")
+            .whereField("username", isEqualTo: usernameLabel.text ?? "")
+            .getDocuments { snapshot, error in
+                if let error = error{
+                    print("Error: \(error)")
+                }
+                
+                guard let documents = snapshot?.documents, !documents.isEmpty else{
+                    print("No user was found")
+                    return
+                }
+                
+                let doc = documents.first!
+                let data = doc.data()
+                
+                // add the user that you are following to your following
+                db.collection("users").document(UserSession.shared.currentUser?.uid ?? "").updateData([
+                    "following": FieldValue.arrayUnion([data["username"] ?? ""])
+                ])
+                
+                let targetUID = doc.documentID
+                // add the yourself to the user that you are following followers
+                db.collection("users").document(targetUID).updateData([
+                    "followers": FieldValue.arrayUnion([UserSession.shared.currentUser?.username ?? ""])
+                ])
+            }
         
     }
 }

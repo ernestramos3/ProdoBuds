@@ -59,7 +59,9 @@ class ViewController: UIViewController, UITextFieldDelegate {
                     username: currUserData["username"] as? String ?? "",
                     bio: currUserData["bio"] as? String ?? "",
                     preferences: currUserData["preferences"] as? [String] ?? [],
-                    profileImageURL: currUserData["profileImageURL"] as? String ?? ""
+                    profileImageURL: currUserData["profileImageURL"] as? String ?? "",
+                    followers: currUserData["followers"] as? [String] ?? [],
+                    following: currUserData["following"] as? [String] ?? []
                 )
                 // this is how you can access ^ those fields
                 UserSession.shared.currentUser = appUser

@@ -75,7 +75,9 @@ class NameViewController: UIViewController, UITextFieldDelegate{
                         "bio": SignupData.shared.bio,
                         "preferences": SignupData.shared.preferences,
                         "email": SignupData.shared.email,
-                        "profileImageURL": downloadURL.absoluteString
+                        "profileImageURL": downloadURL.absoluteString,
+                        "following": [String](),
+                        "followers": [String]()
                     ]) { error in
                         if let error = error {
                             print("Firestore error: \(error.localizedDescription)")

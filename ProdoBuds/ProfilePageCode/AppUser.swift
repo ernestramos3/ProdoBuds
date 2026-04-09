@@ -14,6 +14,8 @@ struct AppUser {
     let bio: String
     let preferences: [String]
     let profileImageURL: String
+    let followers: [String]
+    let following: [String]
 }
 
 class UserSession {
