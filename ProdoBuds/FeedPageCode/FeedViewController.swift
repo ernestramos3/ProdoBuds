@@ -126,6 +126,12 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedPost = globalPosts[indexPath.row]
+        
+        performSegue(withIdentifier: "TimelapseSegueIdentifier", sender: selectedPost)
+    }
+    
     func didTapProfile(for username: String) {
         performSegue(withIdentifier: "ProfileSegueIdentifier", sender: username)
     }
@@ -134,6 +140,22 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
         if segue.identifier == "ProfileSegueIdentifier", let destinationVC = segue.destination as? ProfileViewController, let username = sender as? String {
             
             destinationVC.userToLoad = username
+        }
+        
+        if segue.identifier == "TimelapseSegueIdentifier" {
+            // get destination controller
+            if let timelapseVC = segue.destination as? TimelapseViewController {
+                // cast sender back into a Post object
+                
+                if let post = sender as? Post {
+                    // inject data into the destination
+                    timelapseVC.post = post
+                    print("Success in passing postdata")
+                }
+                else {
+                    print("Failure in passing postdata")
+                }
+            }
         }
     }
     

@@ -64,7 +64,7 @@ class TimelapseViewController: UIViewController, UITableViewDelegate, UITableVie
                     }.resume()
                 }
                 else {
-                    cell.profileImage.image = UIImage(named: "yes")
+                    cell.profileImage.image = UIImage(systemName: "person.circle.fill")
                 }
                 
                 
