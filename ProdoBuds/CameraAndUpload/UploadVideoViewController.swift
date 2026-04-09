@@ -29,6 +29,7 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
     var videoURL: URL!
     
     var privacy: String = "public"
+    var taggedUsersString: String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,27 +82,42 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
         let storage = Storage.storage()
         let storageRef = storage.reference()
         
-        let randomString = "videos/\(generateRandomString(length: 10))"
-        let videoRef = storageRef.child(randomString)
+        let randomString = generateRandomString(length: 10)
+        let videoRef = storageRef.child("videos/\(randomString)")
+        let thumbnailRef = storageRef.child("thumbnails/\(randomString)")
         
-        let metadata = StorageMetadata()
-        metadata.contentType = "video/quicktime"
+        let videoMetadata = StorageMetadata()
+        videoMetadata.contentType = "video/quicktime"
+        
+        // get comma-separated users and convert to array
+        let taggedUsers: [String] = taggedUsersString
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .map { $0.hasPrefix("@") ? String($0.dropFirst()) : $0 }
+            .filter { !$0.isEmpty }
         
         do {
             // Upload video
-            let _ = try await videoRef.putFileAsync(from: videoURL, metadata: metadata)
+            let _ = try await videoRef.putFileAsync(from: videoURL, metadata: videoMetadata)
             
             // Get download URL
             let downloadURL = try await videoRef.downloadURL()
+            
+            // Generate and upload thumbnail
+            let thumbnailURL = try await generateAndUploadThumbnail(
+                videoURL: videoURL,
+                thumbnailRef: thumbnailRef
+            )
             
             // Create Firestore document
             let db = Firestore.firestore()
             try await db.collection("posts").addDocument(data: [
                 "description": captionField.text ?? "",
                 "likes": [],
-                "tagged_users": [],
+                "tagged_users": taggedUsers,
                 "user": UserSession.shared.currentUser?.username ?? "",
                 "videoURL": downloadURL.absoluteString,
+                "thumbnailURL": thumbnailURL,
                 "privacy": privacy,
                 "timestamp": FieldValue.serverTimestamp()
             ])
@@ -131,6 +147,46 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
                 self.present(controller, animated: true)
             }
         }
+    }
+    
+    private func generateAndUploadThumbnail(videoURL: URL, thumbnailRef: StorageReference) async throws -> String {
+        // Generate thumbnail from first frame
+        let asset = AVURLAsset(url: videoURL)
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+        imageGenerator.appliesPreferredTrackTransform = true
+        
+        // Request image at time zero (first frame)
+        let time = CMTime(seconds: 0, preferredTimescale: 600)
+        
+        // Use the newer async API
+        let cgImage: CGImage = try await withCheckedThrowingContinuation { continuation in
+            imageGenerator.generateCGImageAsynchronously(for: time) { image, actualTime, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let image = image {
+                    continuation.resume(returning: image)
+                } else {
+                    continuation.resume(throwing: NSError(domain: "UploadVideoViewController", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to generate thumbnail image"]))
+                }
+            }
+        }
+        
+        let thumbnail = UIImage(cgImage: cgImage)
+        
+        // Convert to JPEG data
+        guard let imageData = thumbnail.jpegData(compressionQuality: 0.8) else {
+            throw NSError(domain: "UploadVideoViewController", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert thumbnail to JPEG"])
+        }
+        
+        // Upload thumbnail
+        let thumbnailMetadata = StorageMetadata()
+        thumbnailMetadata.contentType = "image/jpeg"
+        
+        let _ = try await thumbnailRef.putDataAsync(imageData, metadata: thumbnailMetadata)
+        
+        // Get download URL
+        let thumbnailURL = try await thumbnailRef.downloadURL()
+        return thumbnailURL.absoluteString
     }
     
     private func deleteLocalVideo() {
@@ -226,15 +282,17 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func selectMentions(_ sender: Any) {
         // work on adding tagged users
-        let controller = UIAlertController(title: "Tags", message: "Add users:", preferredStyle: .actionSheet)
+        let controller = UIAlertController(title: "Tags", message: "Add users:", preferredStyle: .alert)
         
         controller.addTextField { textField in
             textField.placeholder = "@orlando, @redial"
-            textField.autocapitalizationType = .words
+            textField.autocapitalizationType = .none
+            textField.text = self.taggedUsersString
         }
         
         controller.addAction(UIAlertAction(title: "OK", style: .default) { _ in
             let text = controller.textFields?.first?.text ?? ""
+            self.taggedUsersString = text
             print("Entered: \(text)")
         })
 

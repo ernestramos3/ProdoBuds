@@ -27,6 +27,9 @@ class ViewModel {
     private var timerTask: Task<Void, Never>?
     
     init() {
+        // Initialize fps with current capture FPS from CameraManager
+        fps = Double(cameraManager.captureFPS)
+        
         Task {
             await handleCameraPreviews()
         }
@@ -110,6 +113,27 @@ class ViewModel {
         let minutes = Int(timeInterval) / 60
         let seconds = Int(timeInterval) % 60
         elapsedTime = String(format: "%02d:%02d", minutes, seconds)
+    }
+    
+    // MARK: - FPS Configuration
+    
+    @MainActor
+    func setCaptureFPS(_ fps: Int32) {
+        cameraManager.setCaptureFPS(fps)
+        // Update the displayed fps value
+        self.fps = Double(fps)
+    }
+    
+    @MainActor
+    func getCurrentCaptureFPS() -> Int32 {
+        return cameraManager.captureFPS
+    }
+    
+    // MARK: - Camera Control
+    
+    @MainActor
+    func flipCamera() {
+        cameraManager.flipCamera()
     }
     
     // MARK: - Photo Library

@@ -12,9 +12,11 @@ class CameraManager: NSObject {
     
     private let captureSession = AVCaptureSession()
     
-    private var deviceInput: AVCaptureDevice?
+    private var deviceInput: AVCaptureDeviceInput?
     
     private var videoOutput: AVCaptureVideoDataOutput?
+    
+    private var currentCamera: AVCaptureDevice?
     
     private let systemPreferredCamera = AVCaptureDevice.default(for: .video)
     
@@ -29,7 +31,7 @@ class CameraManager: NSObject {
     private var frameCount: Int = 0
     
     // Timelapse settings
-    private let captureFPS: Int32 = 5  // Frames captured per second
+    private(set) var captureFPS: Int32 = 5  // Frames captured per second
     private let playbackFPS: Int32 = 30  // Frames played back per second
 
     private var isAuthorized: Bool {
@@ -75,6 +77,10 @@ class CameraManager: NSObject {
               let deviceInput = try? AVCaptureDeviceInput(device: systemPreferredCamera)
         else { return }
         
+        // Set the current camera
+        currentCamera = systemPreferredCamera
+        self.deviceInput = deviceInput
+        
         captureSession.beginConfiguration()
         
         defer {
@@ -91,12 +97,10 @@ class CameraManager: NSObject {
             }
             
             // Set to lower frame rate for timelapse effect
-            // Using 5 fps for a more dramatic timelapse
-            let targetFPS: Int32 = 5
-            systemPreferredCamera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: targetFPS)
-            systemPreferredCamera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: targetFPS)
+            systemPreferredCamera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: captureFPS)
+            systemPreferredCamera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: captureFPS)
             
-            print("Camera configured for timelapse at \(targetFPS) fps")
+            print("Camera configured for timelapse at \(captureFPS) fps")
             print("Actual min duration: \(systemPreferredCamera.activeVideoMinFrameDuration)")
             print("Actual max duration: \(systemPreferredCamera.activeVideoMaxFrameDuration)")
             
@@ -107,6 +111,7 @@ class CameraManager: NSObject {
         
         let videoOutput = AVCaptureVideoDataOutput()
         videoOutput.setSampleBufferDelegate(self, queue: sessionQueue)
+        self.videoOutput = videoOutput
         
         guard captureSession.canAddInput(deviceInput) else {
             print("Unable to add device input to capture session.")
@@ -130,7 +135,7 @@ class CameraManager: NSObject {
             self.captureSession.startRunning()
             
             // Configure frame rate AFTER session starts to prevent AVFoundation from overriding it
-            guard let camera = self.systemPreferredCamera else { return }
+            guard let camera = self.currentCamera else { return }
             
             do {
                 try camera.lockForConfiguration()
@@ -141,12 +146,11 @@ class CameraManager: NSObject {
                 }
                 
                 // Set to lower frame rate for timelapse effect
-                let targetFPS: Int32 = 5
-                camera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: targetFPS)
-                camera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: targetFPS)
+                camera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: captureFPS)
+                camera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: captureFPS)
                 
-                print("Camera configured for timelapse at \(targetFPS) fps (after session start)")
-                print("Will play back at 30 fps for \(30/targetFPS)x speed")
+                print("Camera configured for timelapse at \(captureFPS) fps (after session start)")
+                print("Will play back at 30 fps for \(30/captureFPS)x speed")
                 print("Actual min duration: \(camera.activeVideoMinFrameDuration)")
                 print("Actual max duration: \(camera.activeVideoMaxFrameDuration)")
                 
@@ -279,6 +283,105 @@ class CameraManager: NSObject {
                 self.recordingStartTime = nil
                 self.outputURL = nil
                 self.frameCount = 0
+            }
+        }
+    }
+    
+    // MARK: - FPS Configuration
+    
+    func setCaptureFPS(_ fps: Int32) {
+        guard [2, 5, 10, 15].contains(fps) else {
+            print("Invalid FPS value. Must be 2, 5, 10, or 15")
+            return
+        }
+        
+        captureFPS = fps
+        
+        // Update camera frame rate if available
+        guard let camera = currentCamera else { return }
+        
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            do {
+                try camera.lockForConfiguration()
+                
+                camera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: fps)
+                camera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: fps)
+                
+                print("Camera FPS updated to \(fps) fps")
+                print("Playback will be at \(self.playbackFPS) fps for \(self.playbackFPS/fps)x speed")
+                
+                camera.unlockForConfiguration()
+            } catch {
+                print("Failed to update camera frame rate: \(error)")
+            }
+        }
+    }
+    
+    // MARK: - Camera Control
+    
+    func flipCamera() {
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.captureSession.beginConfiguration()
+            defer { self.captureSession.commitConfiguration() }
+            
+            // Remove current input
+            if let currentInput = self.deviceInput {
+                self.captureSession.removeInput(currentInput)
+            }
+            
+            // Determine new camera position
+            let currentPosition = self.currentCamera?.position ?? .back
+            let newPosition: AVCaptureDevice.Position = currentPosition == .back ? .front : .back
+            
+            // Find camera with new position
+            let discoverySession = AVCaptureDevice.DiscoverySession(
+                deviceTypes: [.builtInWideAngleCamera],
+                mediaType: .video,
+                position: newPosition
+            )
+            
+            guard let newCamera = discoverySession.devices.first else {
+                print("No camera available for position: \(newPosition)")
+                // Re-add the current input if flip fails
+                if let currentInput = self.deviceInput {
+                    self.captureSession.addInput(currentInput)
+                }
+                return
+            }
+            
+            // Create new input
+            do {
+                let newInput = try AVCaptureDeviceInput(device: newCamera)
+                
+                if self.captureSession.canAddInput(newInput) {
+                    self.captureSession.addInput(newInput)
+                    self.deviceInput = newInput
+                    self.currentCamera = newCamera
+                    
+                    // Configure the new camera for timelapse
+                    try newCamera.lockForConfiguration()
+                    newCamera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: self.captureFPS)
+                    newCamera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: self.captureFPS)
+                    newCamera.unlockForConfiguration()
+                    
+                    print("Flipped to \(newPosition == .front ? "front" : "back") camera")
+                } else {
+                    print("Cannot add new camera input")
+                    // Re-add the current input if flip fails
+                    if let currentInput = self.deviceInput {
+                        self.captureSession.addInput(currentInput)
+                    }
+                }
+            } catch {
+                print("Error switching camera: \(error)")
+                // Re-add the current input if flip fails
+                if let currentInput = self.deviceInput {
+                    self.captureSession.addInput(currentInput)
+                }
             }
         }
     }
