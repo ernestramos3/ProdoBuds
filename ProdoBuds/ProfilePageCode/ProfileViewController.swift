@@ -277,53 +277,94 @@ class ProfileHeaderViewCell: UICollectionViewCell {
     @IBAction func followButton2Pressed(_ sender: Any) {
         let db = Firestore.firestore()
         
-        db.collection("users")
-            .whereField("username", isEqualTo: usernameLabel.text ?? "")
-            .getDocuments { snapshot, error in
-                if let error = error {
-                    print("Error: \(error)")
-                    return
-                }
-                
-                guard let documents = snapshot?.documents, !documents.isEmpty else {
-                    print("No user was found")
-                    return
-                }
-                
-                let doc = documents.first!
-                let data = doc.data()
-                let targetUsername = data["username"] as? String ?? ""
-                let targetUID = doc.documentID
-                
-                // add the user that you are following to your following
-                db.collection("users").document(UserSession.shared.currentUser?.uid ?? "").updateData([
-                    "following": FieldValue.arrayUnion([targetUsername])
-                ]) { error in
-                    if error == nil {
-                        // Update local UserSession with the new following
-                        if var user = UserSession.shared.currentUser,
-                           !user.following.contains(targetUsername) {
-                            user.following.append(targetUsername)
-                            UserSession.shared.currentUser = user
+        let buttonText = followButton.titleLabel?.text
+        
+        // meaning that you are trying to follow the user
+        if buttonText == "Follow"{
+            db.collection("users")
+                .whereField("username", isEqualTo: usernameLabel.text ?? "")
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        print("Error: \(error)")
+                        return
+                    }
+                    
+                    guard let documents = snapshot?.documents, !documents.isEmpty else {
+                        print("No user was found")
+                        return
+                    }
+                    
+                    let doc = documents.first!
+                    let data = doc.data()
+                    let targetUsername = data["username"] as? String ?? ""
+                    let targetUID = doc.documentID
+                    
+                    // add the user that you are following to your following
+                    db.collection("users").document(UserSession.shared.currentUser?.uid ?? "").updateData([
+                        "following": FieldValue.arrayUnion([targetUsername])
+                    ]) { error in
+                        if error == nil {
+                            // Update local UserSession with the new following
+                            if var user = UserSession.shared.currentUser,
+                               !user.following.contains(targetUsername) {
+                                user.following.append(targetUsername)
+                                UserSession.shared.currentUser = user
+                            }
                         }
                     }
-                }
-                
-                // add yourself to the user that you are following followers
-                db.collection("users").document(targetUID).updateData([
-                    "followers": FieldValue.arrayUnion([UserSession.shared.currentUser?.username ?? ""])
-                ]) { error in
-                    if error == nil {
-                        // Update the follower count in the UI
-                        DispatchQueue.main.async {
-                            if let currentCount = Int(self.followersCountLabel.text ?? "0") {
-                                self.followersCountLabel.text = String(currentCount + 1)
+                    
+                    // add yourself to the user that you are following followers
+                    db.collection("users").document(targetUID).updateData([
+                        "followers": FieldValue.arrayUnion([UserSession.shared.currentUser?.username ?? ""])
+                    ]) { error in
+                        if error == nil {
+                            // Update the follower count in the UI
+                            DispatchQueue.main.async {
+                                if let currentCount = Int(self.followersCountLabel.text ?? "0") {
+                                    self.followersCountLabel.text = String(currentCount + 1)
+                                }
                             }
                         }
                     }
                 }
-            }
-        
+        UIView.transition(with: followButton, duration: 0.3, options: .transitionCrossDissolve, animations:{
+            self.followButton.setTitle("Unfollow", for: .normal)
+        }, completion: nil)
+        }
+        // meaning that they want to unfollow
+        else{
+            db.collection("users")
+                .whereField("username", isEqualTo: usernameLabel.text ?? "")
+                .getDocuments { snapshot, error in
+                    if let error = error {
+                        print("Error: \(error)")
+                        return
+                    }
+                    
+                    guard let documents = snapshot?.documents, !documents.isEmpty else {
+                        print("No user was found")
+                        return
+                    }
+                    
+                    let doc = documents.first!
+                    let data = doc.data()
+                    let targetUsername = data["username"] as? String ?? ""
+                    let targetUID = doc.documentID
+                    
+                    // remove the that person from your following
+                    db.collection("users").document(UserSession.shared.currentUser?.uid ?? "").updateData([
+                        "following": FieldValue.arrayRemove([targetUsername])
+                    ])
+                    
+                    // remove yourself from that persons followers list
+                    db.collection("users").document(targetUID).updateData([
+                        "followers": FieldValue.arrayRemove([UserSession.shared.currentUser?.uid ?? ""])
+                    ])
+                }
+            UIView.transition(with: followButton, duration: 0.3, options: .transitionCrossDissolve, animations:{
+                self.followButton.setTitle("follow", for: .normal)
+            }, completion: nil)
+        }
     }
 }
 
