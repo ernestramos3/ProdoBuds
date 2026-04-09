@@ -143,12 +143,6 @@ class TimelapseHeaderViewCell: UITableViewCell {
         // initialization code
     }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-                
-        // Configure the view for the selected state
-    }
-    
     // setup player
     func setupVideo(with urlString: String) {
         guard let url = URL(string: urlString) else { return }
@@ -163,6 +157,11 @@ class TimelapseHeaderViewCell: UITableViewCell {
             
             videoContainerView.layer.addSublayer(playerLayer!)
         }
+        
+        // for replaying purposes
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { [weak self] _ in
+            self?.playButton.setImage(UIImage(systemName: "goforward"), for: .normal)
+        }
     }
     
     @IBAction func playButton2Pressed(_ sender: Any) {
@@ -171,6 +170,11 @@ class TimelapseHeaderViewCell: UITableViewCell {
             playButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
         }
         else {
+            // if player is at the very end, seek to the beginning first
+            if player?.currentItem?.duration == player?.currentTime() {
+                player?.seek(to: .zero)
+            }
+            
             player?.play()
             playButton.setImage(UIImage(systemName: "pause.fill"), for: .normal)
         }
@@ -179,10 +183,6 @@ class TimelapseHeaderViewCell: UITableViewCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         playerLayer?.frame = videoContainerView.bounds
-    }
-    
-    @IBAction func repeatButton2Pressed(_ sender: Any) {
-        
     }
 }
 
@@ -195,12 +195,6 @@ class PostedCommentViewCell: UITableViewCell {
         super.awakeFromNib()
         // initialization code
     }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        
-        // Configure the view for the selected state
-    }
 }
 
 class DraftCommentViewCell: UITableViewCell {
@@ -211,12 +205,6 @@ class DraftCommentViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // initialization code
-    }
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        
-        // Configure the view for the selected state
     }
     
     @IBAction func draftComment(_ sender: Any) {

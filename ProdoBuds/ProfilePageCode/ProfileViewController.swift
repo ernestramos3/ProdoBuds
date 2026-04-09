@@ -190,7 +190,29 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PostGridCellIdentifier", for: indexPath) as! PostGridViewCell
         
+        var specificPost = currentUserPosts[indexPath.item - 1]
+        
+        // download thumbnail image
+        if let thumbnailURL = URL(string: specificPost.thumbnailURL) {
+            self.downloadImage(from: thumbnailURL) { image in
+                DispatchQueue.main.async {
+                    cell.postImageView.image = image
+                }
+            }
+        }
+        
         return cell
+    }
+    
+    func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            if let data = data {
+                completion(UIImage(data: data))
+            }
+            else {
+                completion(nil)
+            }
+        }.resume()
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -263,7 +285,7 @@ class ProfileHeaderViewCell: UICollectionViewCell {
 }
 
 class PostGridViewCell: UICollectionViewCell {
-    @IBOutlet weak var postView: UIView!
+    @IBOutlet weak var postImageView: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
