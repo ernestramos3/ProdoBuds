@@ -130,6 +130,12 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
             let isMe = (userToLoad == nil || userToLoad == UserSession.shared.currentUser?.username)
             cell.followButton.isHidden = isMe
             
+            // Update follow button text based on whether we're already following this user
+            if !isMe, let targetUsername = profileOwnerData?["username"] as? String {
+                let isFollowing = UserSession.shared.currentUser?.following.contains(targetUsername) ?? false
+                cell.followButton.setTitle(isFollowing ? "Unfollow" : "Follow", for: .normal)
+            }
+            
             // if the user is viewing themselves grab their own following base
             if isMe {
                 cell.followingCountLabel.text = String(UserSession.shared.currentUser?.following.count ?? 0)
