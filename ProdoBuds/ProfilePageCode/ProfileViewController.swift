@@ -354,15 +354,33 @@ class ProfileHeaderViewCell: UICollectionViewCell {
                     // remove the that person from your following
                     db.collection("users").document(UserSession.shared.currentUser?.uid ?? "").updateData([
                         "following": FieldValue.arrayRemove([targetUsername])
-                    ])
+                    ]) { error in
+                        if error == nil {
+                            // Update local UserSession by removing from following
+                            if var user = UserSession.shared.currentUser,
+                               let index = user.following.firstIndex(of: targetUsername) {
+                                user.following.remove(at: index)
+                                UserSession.shared.currentUser = user
+                            }
+                        }
+                    }
                     
                     // remove yourself from that persons followers list
                     db.collection("users").document(targetUID).updateData([
-                        "followers": FieldValue.arrayRemove([UserSession.shared.currentUser?.uid ?? ""])
-                    ])
+                        "followers": FieldValue.arrayRemove([UserSession.shared.currentUser?.username ?? ""])
+                    ]) { error in
+                        if error == nil {
+                            // Update the follower count in the UI
+                            DispatchQueue.main.async {
+                                if let currentCount = Int(self.followersCountLabel.text ?? "0"), currentCount > 0 {
+                                    self.followersCountLabel.text = String(currentCount - 1)
+                                }
+                            }
+                        }
+                    }
                 }
             UIView.transition(with: followButton, duration: 0.3, options: .transitionCrossDissolve, animations:{
-                self.followButton.setTitle("follow", for: .normal)
+                self.followButton.setTitle("Follow", for: .normal)
             }, completion: nil)
         }
     }
