@@ -82,11 +82,12 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
         let storage = Storage.storage()
         let storageRef = storage.reference()
         
-        let randomString = "videos/\(generateRandomString(length: 10))"
-        let videoRef = storageRef.child(randomString)
+        let randomString = generateRandomString(length: 10)
+        let videoRef = storageRef.child("videos/\(randomString)")
+        let thumbnailRef = storageRef.child("thumbnails/\(randomString)")
         
-        let metadata = StorageMetadata()
-        metadata.contentType = "video/quicktime"
+        let videoMetadata = StorageMetadata()
+        videoMetadata.contentType = "video/quicktime"
         
         // get comma-separated users and convert to array
         let taggedUsers: [String] = taggedUsersString
@@ -97,10 +98,16 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
         
         do {
             // Upload video
-            let _ = try await videoRef.putFileAsync(from: videoURL, metadata: metadata)
+            let _ = try await videoRef.putFileAsync(from: videoURL, metadata: videoMetadata)
             
             // Get download URL
             let downloadURL = try await videoRef.downloadURL()
+            
+            // Generate and upload thumbnail
+            let thumbnailURL = try await generateAndUploadThumbnail(
+                videoURL: videoURL,
+                thumbnailRef: thumbnailRef
+            )
             
             // Create Firestore document
             let db = Firestore.firestore()
@@ -110,6 +117,7 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
                 "tagged_users": taggedUsers,
                 "user": UserSession.shared.currentUser?.username ?? "",
                 "videoURL": downloadURL.absoluteString,
+                "thumbnailURL": thumbnailURL,
                 "privacy": privacy,
                 "timestamp": FieldValue.serverTimestamp()
             ])
@@ -139,6 +147,46 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
                 self.present(controller, animated: true)
             }
         }
+    }
+    
+    private func generateAndUploadThumbnail(videoURL: URL, thumbnailRef: StorageReference) async throws -> String {
+        // Generate thumbnail from first frame
+        let asset = AVURLAsset(url: videoURL)
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+        imageGenerator.appliesPreferredTrackTransform = true
+        
+        // Request image at time zero (first frame)
+        let time = CMTime(seconds: 0, preferredTimescale: 600)
+        
+        // Use the newer async API
+        let cgImage: CGImage = try await withCheckedThrowingContinuation { continuation in
+            imageGenerator.generateCGImageAsynchronously(for: time) { image, actualTime, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                } else if let image = image {
+                    continuation.resume(returning: image)
+                } else {
+                    continuation.resume(throwing: NSError(domain: "UploadVideoViewController", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to generate thumbnail image"]))
+                }
+            }
+        }
+        
+        let thumbnail = UIImage(cgImage: cgImage)
+        
+        // Convert to JPEG data
+        guard let imageData = thumbnail.jpegData(compressionQuality: 0.8) else {
+            throw NSError(domain: "UploadVideoViewController", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to convert thumbnail to JPEG"])
+        }
+        
+        // Upload thumbnail
+        let thumbnailMetadata = StorageMetadata()
+        thumbnailMetadata.contentType = "image/jpeg"
+        
+        let _ = try await thumbnailRef.putDataAsync(imageData, metadata: thumbnailMetadata)
+        
+        // Get download URL
+        let thumbnailURL = try await thumbnailRef.downloadURL()
+        return thumbnailURL.absoluteString
     }
     
     private func deleteLocalVideo() {
