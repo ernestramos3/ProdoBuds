@@ -29,7 +29,7 @@ class CameraManager: NSObject {
     private var frameCount: Int = 0
     
     // Timelapse settings
-    private let captureFPS: Int32 = 5  // Frames captured per second
+    private(set) var captureFPS: Int32 = 5  // Frames captured per second
     private let playbackFPS: Int32 = 30  // Frames played back per second
 
     private var isAuthorized: Bool {
@@ -91,12 +91,10 @@ class CameraManager: NSObject {
             }
             
             // Set to lower frame rate for timelapse effect
-            // Using 5 fps for a more dramatic timelapse
-            let targetFPS: Int32 = 5
-            systemPreferredCamera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: targetFPS)
-            systemPreferredCamera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: targetFPS)
+            systemPreferredCamera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: captureFPS)
+            systemPreferredCamera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: captureFPS)
             
-            print("Camera configured for timelapse at \(targetFPS) fps")
+            print("Camera configured for timelapse at \(captureFPS) fps")
             print("Actual min duration: \(systemPreferredCamera.activeVideoMinFrameDuration)")
             print("Actual max duration: \(systemPreferredCamera.activeVideoMaxFrameDuration)")
             
@@ -141,12 +139,11 @@ class CameraManager: NSObject {
                 }
                 
                 // Set to lower frame rate for timelapse effect
-                let targetFPS: Int32 = 5
-                camera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: targetFPS)
-                camera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: targetFPS)
+                camera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: captureFPS)
+                camera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: captureFPS)
                 
-                print("Camera configured for timelapse at \(targetFPS) fps (after session start)")
-                print("Will play back at 30 fps for \(30/targetFPS)x speed")
+                print("Camera configured for timelapse at \(captureFPS) fps (after session start)")
+                print("Will play back at 30 fps for \(30/captureFPS)x speed")
                 print("Actual min duration: \(camera.activeVideoMinFrameDuration)")
                 print("Actual max duration: \(camera.activeVideoMaxFrameDuration)")
                 
@@ -279,6 +276,38 @@ class CameraManager: NSObject {
                 self.recordingStartTime = nil
                 self.outputURL = nil
                 self.frameCount = 0
+            }
+        }
+    }
+    
+    // MARK: - FPS Configuration
+    
+    func setCaptureFPS(_ fps: Int32) {
+        guard [2, 5, 10, 15].contains(fps) else {
+            print("Invalid FPS value. Must be 2, 5, 10, or 15")
+            return
+        }
+        
+        captureFPS = fps
+        
+        // Update camera frame rate if available
+        guard let camera = systemPreferredCamera else { return }
+        
+        sessionQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            do {
+                try camera.lockForConfiguration()
+                
+                camera.activeVideoMinFrameDuration = CMTime(value: 1, timescale: fps)
+                camera.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: fps)
+                
+                print("Camera FPS updated to \(fps) fps")
+                print("Playback will be at \(self.playbackFPS) fps for \(self.playbackFPS/fps)x speed")
+                
+                camera.unlockForConfiguration()
+            } catch {
+                print("Failed to update camera frame rate: \(error)")
             }
         }
     }

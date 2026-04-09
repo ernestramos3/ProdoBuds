@@ -29,6 +29,7 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
     var videoURL: URL!
     
     var privacy: String = "public"
+    var taggedUsersString: String = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,6 +88,13 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
         let metadata = StorageMetadata()
         metadata.contentType = "video/quicktime"
         
+        // get comma-separated users and convert to array
+        let taggedUsers: [String] = taggedUsersString
+            .split(separator: ",")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .map { $0.hasPrefix("@") ? String($0.dropFirst()) : $0 }
+            .filter { !$0.isEmpty }
+        
         do {
             // Upload video
             let _ = try await videoRef.putFileAsync(from: videoURL, metadata: metadata)
@@ -99,7 +107,7 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
             try await db.collection("posts").addDocument(data: [
                 "description": captionField.text ?? "",
                 "likes": [],
-                "tagged_users": [],
+                "tagged_users": taggedUsers,
                 "user": UserSession.shared.currentUser?.username ?? "",
                 "videoURL": downloadURL.absoluteString,
                 "privacy": privacy,
@@ -226,15 +234,17 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func selectMentions(_ sender: Any) {
         // work on adding tagged users
-        let controller = UIAlertController(title: "Tags", message: "Add users:", preferredStyle: .actionSheet)
+        let controller = UIAlertController(title: "Tags", message: "Add users:", preferredStyle: .alert)
         
         controller.addTextField { textField in
             textField.placeholder = "@orlando, @redial"
-            textField.autocapitalizationType = .words
+            textField.autocapitalizationType = .none
+            textField.text = self.taggedUsersString
         }
         
         controller.addAction(UIAlertAction(title: "OK", style: .default) { _ in
             let text = controller.textFields?.first?.text ?? ""
+            self.taggedUsersString = text
             print("Entered: \(text)")
         })
 

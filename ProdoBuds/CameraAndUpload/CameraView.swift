@@ -10,6 +10,7 @@ import SwiftUI
 struct CameraView: View {
     
     @Bindable var viewModel: ViewModel
+    @State private var showFPSSettings = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -54,7 +55,7 @@ struct CameraView: View {
                             
                             // Settings Icon - Top Center
                             Button(action: {
-                                // Add settings action here
+                                showFPSSettings = true
                             }) {
                                 Image(systemName: "gearshape.fill")
                                     .font(.system(size: 24))
@@ -109,6 +110,27 @@ struct CameraView: View {
                 }
                 .frame(height: geometry.size.height * 0.1)
             }
+        }
+        .confirmationDialog("Select Capture FPS", isPresented: $showFPSSettings, titleVisibility: .visible) {
+            Button("2 FPS (15x speed)") {
+                viewModel.setCaptureFPS(2)
+            }
+            
+            Button("5 FPS (6x speed)") {
+                viewModel.setCaptureFPS(5)
+            }
+            
+            Button("10 FPS (3x speed)") {
+                viewModel.setCaptureFPS(10)
+            }
+            
+            Button("15 FPS (2x speed)") {
+                viewModel.setCaptureFPS(15)
+            }
+            
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Choose how many frames per second to capture. Lower FPS creates faster timelapse playback at 30 FPS.")
         }
     }
 }
