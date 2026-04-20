@@ -260,6 +260,17 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I0s-EX-65h" customClass="SettingsButton">
+                                                    <rect key="frame" x="363" y="21" width="51" height="35"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="plain" image="gearshape.fill" catalog="system">
+                                                        <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    </buttonConfiguration>
+                                                    <connections>
+                                                        <segue destination="ZBs-yN-8bh" kind="show" id="Rbu-97-dOa"/>
+                                                    </connections>
+                                                </button>
                                             </subviews>
                                         </collectionViewCellContentView>
                                         <size key="customSize" width="440" height="436"/>
@@ -348,6 +359,60 @@
             </objects>
             <point key="canvasLocation" x="258" y="601"/>
         </scene>
+        <!--Settings View Controller-->
+        <scene sceneID="omf-Og-0hT">
+            <objects>
+                <viewController id="ZBs-yN-8bh" customClass="SettingsViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="dJP-zD-9nf">
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9RB-cR-mFi">
+                                <rect key="frame" x="147" y="339" width="147" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Account Privacy">
+                                    <backgroundConfiguration key="background">
+                                        <color key="backgroundColor" red="0.44764214749999998" green="0.96216756110000001" blue="0.29158240559999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                    </backgroundConfiguration>
+                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uzr-e4-47I">
+                                <rect key="frame" x="163" y="439" width="114" height="35"/>
+                                <color key="backgroundColor" red="0.44764214749999998" green="0.96216756110000001" blue="0.29158240559999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Interactions">
+                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6ET-6C-YPC">
+                                <rect key="frame" x="157" y="549" width="128" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Saved Videos">
+                                    <backgroundConfiguration key="background">
+                                        <color key="backgroundColor" red="0.44764214749999998" green="0.96216756110000001" blue="0.29158240559999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                    </backgroundConfiguration>
+                                    <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </buttonConfiguration>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="GBS-WM-T4F"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="6ET-6C-YPC" firstAttribute="top" secondItem="GBS-WM-T4F" secondAttribute="top" constant="371" id="Bb1-f9-pro"/>
+                            <constraint firstItem="GBS-WM-T4F" firstAttribute="trailing" secondItem="6ET-6C-YPC" secondAttribute="trailing" constant="155" id="NCj-1D-3Nk"/>
+                            <constraint firstItem="GBS-WM-T4F" firstAttribute="trailing" secondItem="Uzr-e4-47I" secondAttribute="trailing" constant="163" id="Ooq-ka-LoZ"/>
+                            <constraint firstItem="Uzr-e4-47I" firstAttribute="top" secondItem="GBS-WM-T4F" secondAttribute="top" constant="261" id="beA-1h-ySm"/>
+                            <constraint firstItem="9RB-cR-mFi" firstAttribute="top" secondItem="GBS-WM-T4F" secondAttribute="top" constant="161" id="hR0-5E-zXW"/>
+                            <constraint firstItem="GBS-WM-T4F" firstAttribute="trailing" secondItem="9RB-cR-mFi" secondAttribute="trailing" constant="146" id="jsR-4X-PcB"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="1yQ-ly-eEf"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GVb-83-tXP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1819" y="399"/>
+        </scene>
         <!--Timelapse View Controller-->
         <scene sceneID="GWx-Li-OY5">
             <objects>
@@ -425,7 +490,7 @@
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="person.circle.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="X6K-yi-a3E">
                                                     <rect key="frame" x="26" y="36.666666666666742" width="76" height="65"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <color key="tintColor" red="0.0" green="0.97680455450000003" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <color key="tintColor" red="0.44760352370000001" green="0.96216696499999999" blue="0.29150918129999998" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Username" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O5W-HY-L71">
                                                     <rect key="frame" x="110" y="59" width="293" height="21"/>
@@ -1078,6 +1143,7 @@
     <resources>
         <image name="bubble" catalog="system" width="128" height="110"/>
         <image name="camera.fill" catalog="system" width="128" height="93"/>
+        <image name="gearshape.fill" catalog="system" width="128" height="123"/>
         <image name="heart" catalog="system" width="128" height="107"/>
         <image name="house.fill" catalog="system" width="128" height="104"/>
         <image name="person.circle.fill" catalog="system" width="128" height="123"/>
