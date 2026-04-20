@@ -17,6 +17,9 @@ struct UploadVideoControllerWrapper: UIViewControllerRepresentable {
         // Prevent SwiftUI from adding additional safe area insets
         vc.additionalSafeAreaInsets = .zero
         
+        // Force light mode appearance
+        vc.overrideUserInterfaceStyle = .light
+        
         return vc
     }
     
