@@ -16,6 +16,22 @@ struct AppUser {
     let profileImageURL: String
     var followers: [String]
     var following: [String]
+
+    /// Mirrors Firestore `users/{uid}` — kept in sync with profile fetch and settings screens.
+    var accountIsPrivate: Bool = false
+    var blockedUsernames: [String] = []
+    var showLikesOnPosts: Bool = true
+    var showCommentsOnPosts: Bool = true
+
+    /// Applies optional profile fields from Firestore into an existing session user (settings + core lists).
+    static func mergingFirestoreProfile(_ data: [String: Any], into user: AppUser) -> AppUser {
+        var u = user
+        if let v = data["accountIsPrivate"] as? Bool { u.accountIsPrivate = v }
+        if let v = data["blockedUsers"] as? [String] { u.blockedUsernames = v }
+        if let v = data["showLikesOnPosts"] as? Bool { u.showLikesOnPosts = v }
+        if let v = data["showCommentsOnPosts"] as? Bool { u.showCommentsOnPosts = v }
+        return u
+    }
 }
 
 class UserSession {

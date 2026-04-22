@@ -41,6 +41,31 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
         let targetedUser = userToLoad ?? UserSession.shared.currentUser?.username ?? ""
         fetchProfileData(username: targetedUser)
         fetchPosts(username: targetedUser)
+
+        // Profile tab scene has a storyboard gear + segue; the feed-pushed profile scene does not.
+        let isMe = (userToLoad == nil || userToLoad == UserSession.shared.currentUser?.username)
+        if !isMe {
+            navigationItem.rightBarButtonItem = nil
+        } else if navigationItem.rightBarButtonItem == nil {
+            let gear = UIImage(systemName: "gearshape.fill")
+                ?? UIImage(systemName: "gearshape")
+                ?? UIImage(systemName: "gear")
+            navigationItem.rightBarButtonItem = UIBarButtonItem(
+                image: gear,
+                style: .plain,
+                target: self,
+                action: #selector(openSettingsTapped)
+            )
+        }
+    }
+
+    /// Used when opening your own profile from the feed (no storyboard gear). Tab profile uses `ProfileSettingsSegueIdentifier`.
+    @objc private func openSettingsTapped() {
+        let storyboard = UIStoryboard(name: "HomeScreen", bundle: nil)
+        guard let settingsVC = storyboard.instantiateViewController(withIdentifier: "SettingsViewControllerID") as? SettingsViewController else {
+            return
+        }
+        navigationController?.pushViewController(settingsVC, animated: true)
     }
     
     func fetchProfileData(username: String) {
@@ -50,7 +75,12 @@ class ProfileViewController: UIViewController, UICollectionViewDelegate, UIColle
             if let document = snapshot?.documents.first {
                 let data = document.data()
                 self.profileOwnerData = data
-                
+
+                let isMe = (self.userToLoad == nil || self.userToLoad == UserSession.shared.currentUser?.username)
+                if isMe, let current = UserSession.shared.currentUser {
+                    UserSession.shared.currentUser = AppUser.mergingFirestoreProfile(data, into: current)
+                }
+
                 // reload header info to show new info
                 DispatchQueue.main.async {
                     self.profileView.reloadItems(at: [IndexPath(item: 0, section: 0)])

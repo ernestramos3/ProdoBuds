@@ -118,6 +118,7 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
             // Create Firestore document
             let db = Firestore.firestore()
             try await db.collection("posts").addDocument(data: [
+                "id" : db.collection("posts").document().documentID,
                 "description": captionField.text ?? "",
                 "likes": [],
                 "tagged_users": taggedUsers,
