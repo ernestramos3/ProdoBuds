@@ -5,26 +5,27 @@
 //  Created by Kevin Evans on 4/20/26.
 //
 
-<<<<<<< HEAD
 import UIKit
+import FirebaseAuth
 
 final class SettingsViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Settings"
-=======
-import Foundation
-import UIKit
+    }
 
-class SettingsViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    @IBAction private func logoutTapped(_ sender: UIButton) {
+        do {
+            try Auth.auth().signOut()
+        } catch {
+            print("Sign out error: \(error.localizedDescription)")
+        }
+        UserSession.shared.currentUser = nil
+        // `ViewController` presents `HomeScreen` full-screen from the window root after login.
+        view.window?.rootViewController?.dismiss(animated: true)
     }
 }
-
-// add the shared account settings data here ...
 
 extension SettingsViewController {
 
@@ -37,6 +38,5 @@ extension SettingsViewController {
 
         static var showLikesOnPosts: Bool = true
         static var showComments: Bool = true
->>>>>>> eb8e4974ef5619af9ece664a978775aa9e070b44
     }
 }

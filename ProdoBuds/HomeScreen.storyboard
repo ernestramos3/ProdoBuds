@@ -1089,7 +1089,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="SeT-st-01">
-                                <rect key="frame" x="40" y="400" width="111" height="84"/>
+                                <rect key="frame" x="40" y="400" width="111" height="138"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SeT-bn-01">
                                         <rect key="frame" x="0.0" y="0.0" width="111" height="30"/>
@@ -1107,6 +1107,15 @@
                                         </state>
                                         <connections>
                                             <segue destination="eF3-In-tcz" kind="show" id="SeT-sg-In"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SeT-bn-03">
+                                        <rect key="frame" x="0.0" y="108" width="111" height="30"/>
+                                        <state key="normal" title="Log Out">
+                                            <color key="titleColor" red="0.39704992579999998" green="1" blue="0.2081393315" alpha="0.84705882349999995" colorSpace="custom" customColorSpace="displayP3"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="logoutTapped:" destination="aB1-Se-ttG" eventType="touchUpInside" id="SeT-ac-Lo"/>
                                         </connections>
                                     </button>
                                 </subviews>
