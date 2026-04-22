@@ -1088,8 +1088,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+<<<<<<< HEAD
                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="SeT-st-01">
                                 <rect key="frame" x="40" y="400" width="111" height="138"/>
+=======
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="SeT-st-01">
+                                <rect key="frame" x="40" y="400" width="111" height="84"/>
+>>>>>>> ab038f6046f1fcc5137fd79f3feadd4fd304302d
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SeT-bn-01">
                                         <rect key="frame" x="0.0" y="0.0" width="111" height="30"/>
@@ -1123,6 +1128,10 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="SeT-sf-01"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="SeT-st-01" firstAttribute="top" secondItem="SeT-sf-01" secondAttribute="top" constant="222" id="KOH-vx-zzd"/>
+                            <constraint firstItem="SeT-sf-01" firstAttribute="trailing" secondItem="SeT-st-01" secondAttribute="trailing" constant="289" id="bap-LK-qhv"/>
+                        </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Settings" id="SeT-ni-01"/>
                 </viewController>
