@@ -23,10 +23,12 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var videoView: UIView!
     @IBOutlet weak var captionField: UITextField!
     @IBOutlet weak var timeLabel: UILabel! // Make sure to connect this UILabel in your storyboard
+    @IBOutlet weak var fpsLabel: UILabel!
     
     var player: AVPlayer!
     var avpController = AVPlayerViewController()
     var videoURL: URL!
+    var selectedFPS: Int32 = 5 // Default to 5 fps
     
     var privacy: String = "public"
     var taggedUsersString: String = ""
@@ -63,6 +65,30 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
         avpController.view.frame.size.width = videoView.frame.size.width
         self.videoView.addSubview(avpController.view)
         player.play()
+        
+        // Update labels with video info
+        updateVideoInfoLabels()
+    }
+    
+    private func updateVideoInfoLabels() {
+        guard let url = videoURL else { return }
+        
+        let asset = AVURLAsset(url: url)
+        
+        // Get video duration
+        let duration = asset.duration
+        let durationInSeconds = CMTimeGetSeconds(duration)
+        
+        // Format duration as MM:SS
+        let minutes = Int(durationInSeconds) / 60
+        let seconds = Int(durationInSeconds) % 60
+        let durationString = String(format: "%02d:%02d", minutes, seconds)
+        
+        // Update time label
+        timeLabel.text = durationString
+        
+        // Update FPS label
+        fpsLabel.text = "\(selectedFPS) FPS"
     }
     
     // Called when 'return' key pressed

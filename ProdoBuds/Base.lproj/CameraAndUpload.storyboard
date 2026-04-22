@@ -139,9 +139,9 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2 fps" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zaB-2t-TjT">
-                                <rect key="frame" x="375" y="50" width="40" height="20"/>
+                                <rect key="frame" x="365" y="50" width="50" height="20"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="40" id="ApT-4u-1i2"/>
+                                    <constraint firstAttribute="width" constant="50" id="ApT-4u-1i2"/>
                                     <constraint firstAttribute="height" constant="20" id="xOb-Ed-hph"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
@@ -179,6 +179,7 @@
                     </view>
                     <connections>
                         <outlet property="captionField" destination="ZBg-rf-bgz" id="CtS-zL-OcL"/>
+                        <outlet property="fpsLabel" destination="zaB-2t-TjT" id="veL-da-Bjr"/>
                         <outlet property="timeLabel" destination="dlh-vl-Rzs" id="g01-p3-BX9"/>
                         <outlet property="videoView" destination="5YI-h7-XgH" id="7fW-t8-IA0"/>
                     </connections>

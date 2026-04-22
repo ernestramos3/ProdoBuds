@@ -152,6 +152,9 @@ class TimelapseHeaderViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // initialization code
+        profileImage.layer.cornerRadius = profileImage.frame.size.width / 2
+        profileImage.clipsToBounds = true
+        profileImage.contentMode = .scaleAspectFill
     }
     
     // setup player
@@ -230,6 +233,9 @@ class PostedCommentViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // initialization code
+        profileImage.layer.cornerRadius = profileImage.frame.size.width / 2
+        profileImage.clipsToBounds = true
+        profileImage.contentMode = .scaleAspectFill
     }
 }
 
@@ -241,6 +247,9 @@ class DraftCommentViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // initialization code
+        profileImage.layer.cornerRadius = profileImage.frame.size.width / 2
+        profileImage.clipsToBounds = true
+        profileImage.contentMode = .scaleAspectFill
     }
     
     @IBAction func draftComment(_ sender: Any) {
