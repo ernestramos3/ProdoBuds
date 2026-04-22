@@ -1088,13 +1088,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-<<<<<<< HEAD
                             <stackView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="SeT-st-01">
                                 <rect key="frame" x="40" y="400" width="111" height="138"/>
-=======
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="SeT-st-01">
-                                <rect key="frame" x="40" y="400" width="111" height="84"/>
->>>>>>> ab038f6046f1fcc5137fd79f3feadd4fd304302d
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SeT-bn-01">
                                         <rect key="frame" x="0.0" y="0.0" width="111" height="30"/>
