@@ -3,6 +3,7 @@
     <device id="retina6_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="collection view cell content view" minToolsVersion="11.0"/>
@@ -17,9 +18,6 @@
                         <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gradient" translatesAutoresizingMaskIntoConstraints="NO" id="ixy-4S-yIr">
-                                <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
-                            </imageView>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="prodobuds-transparent" translatesAutoresizingMaskIntoConstraints="NO" id="1Qk-Wr-iF9">
                                 <rect key="frame" x="-61" y="-21" width="562" height="417"/>
                                 <constraints>
@@ -42,7 +40,7 @@
                                     <constraint firstAttribute="height" constant="40" id="Ej1-98-TYw"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                <textInputTraits key="textInputTraits"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Login" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G98-Q7-MFC">
                                 <rect key="frame" x="197.66666666666666" y="112" width="45" height="21"/>
@@ -105,14 +103,13 @@
                             </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="CreamColor"/>
                         <constraints>
                             <constraint firstItem="1Qk-Wr-iF9" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" constant="-21" id="56O-SJ-sFh"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="sLw-0Q-SRk" secondAttribute="trailing" constant="77" id="7bq-bJ-4ln"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Cg3-9L-lxP" secondAttribute="trailing" constant="77" id="FC8-4b-Pnx"/>
                             <constraint firstItem="fmP-UD-tpC" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="JJc-fJ-FAK"/>
                             <constraint firstItem="Cg3-9L-lxP" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="77" id="JPZ-sv-6Vs"/>
-                            <constraint firstAttribute="trailing" secondItem="ixy-4S-yIr" secondAttribute="trailing" id="K5J-qf-reU"/>
                             <constraint firstItem="G98-Q7-MFC" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="50" id="KDd-Ie-Twm"/>
                             <constraint firstItem="6Or-i0-J27" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Qpg-6p-XvG"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="sLw-0Q-SRk" secondAttribute="trailing" constant="77" id="Swb-jh-nUN"/>
@@ -123,13 +120,10 @@
                             <constraint firstItem="NyU-cn-lR3" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="77" id="dzG-pb-KUH"/>
                             <constraint firstItem="1Qk-Wr-iF9" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="-61" id="ev2-r0-Pob"/>
                             <constraint firstAttribute="trailing" secondItem="1Qk-Wr-iF9" secondAttribute="trailing" constant="-61" id="fF6-6W-wjH"/>
-                            <constraint firstItem="ixy-4S-yIr" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="gxo-rr-VJP"/>
                             <constraint firstItem="dFn-wr-soQ" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="77" id="jLG-pM-Wb3"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="NyU-cn-lR3" secondAttribute="trailing" constant="77" id="jZN-Ni-Wfq"/>
-                            <constraint firstAttribute="bottom" secondItem="ixy-4S-yIr" secondAttribute="bottom" id="jde-al-yDo"/>
                             <constraint firstItem="fmP-UD-tpC" firstAttribute="top" secondItem="dFn-wr-soQ" secondAttribute="bottom" constant="15" id="n4B-Eh-Sos"/>
                             <constraint firstItem="6Or-i0-J27" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="-25" id="oag-tx-mDr"/>
-                            <constraint firstItem="ixy-4S-yIr" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="r5g-hO-UiS"/>
                             <constraint firstItem="G98-Q7-MFC" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="rry-Bx-ElC"/>
                             <constraint firstItem="Cg3-9L-lxP" firstAttribute="top" secondItem="NyU-cn-lR3" secondAttribute="bottom" constant="50" id="sNX-bh-azp"/>
                             <constraint firstItem="sLw-0Q-SRk" firstAttribute="top" secondItem="6Or-i0-J27" secondAttribute="bottom" constant="5" id="w4m-3c-gGl"/>
@@ -155,9 +149,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Create an Account" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kW4-sm-jY8">
-                                <rect key="frame" x="150" y="169" width="141" height="21"/>
+                                <rect key="frame" x="150" y="169" width="147" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                 <color key="textColor" systemColor="systemGreenColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -211,7 +205,7 @@
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="v2h-o8-30m"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="CreamColor"/>
                     </view>
                     <connections>
                         <outlet property="email" destination="4rc-Aj-Zmn" id="0sk-dT-x28"/>
@@ -246,9 +240,9 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Choose a bio picture" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hvL-FW-RJw">
-                                <rect key="frame" x="142" y="162" width="157" height="21"/>
+                                <rect key="frame" x="142" y="162" width="163" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                 <color key="textColor" systemColor="systemGreenColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -281,7 +275,7 @@
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="OuK-H6-sf0"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="CreamColor"/>
                     </view>
                     <connections>
                         <outlet property="imageView" destination="xiC-ML-aFt" id="2KM-KQ-2C5"/>
@@ -301,9 +295,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Preferences" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dE0-Or-pKU">
-                                <rect key="frame" x="174" y="159" width="92" height="21"/>
+                                <rect key="frame" x="174" y="159" width="97" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                 <color key="textColor" systemColor="systemGreenColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -384,7 +378,7 @@
                             </collectionView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="VcZ-tO-pUm"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="CreamColor"/>
                     </view>
                     <connections>
                         <outlet property="collectionView" destination="11b-Jg-8na" id="0Qp-Fr-nMP"/>
@@ -437,9 +431,9 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Bio" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wn7-Zk-co0">
-                                <rect key="frame" x="208" y="151" width="25" height="21"/>
+                                <rect key="frame" x="208" y="151" width="26" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                 <color key="textColor" systemColor="systemGreenColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -458,7 +452,7 @@
                             </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="G1N-Im-yHd"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="CreamColor"/>
                     </view>
                     <connections>
                         <outlet property="bio" destination="28C-lN-gVv" id="Wt5-3m-9oK"/>
@@ -496,9 +490,9 @@
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Enter your username" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yaT-gU-bxn">
-                                <rect key="frame" x="142" y="136" width="158" height="21"/>
+                                <rect key="frame" x="139" y="136" width="166" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                 <color key="textColor" systemColor="systemGreenColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -522,7 +516,7 @@
                             </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="BuI-Ox-0e1"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" name="CreamColor"/>
                     </view>
                     <connections>
                         <outlet property="errorMsg" destination="fDn-8a-Yld" id="wX9-nA-MKd"/>
@@ -539,8 +533,10 @@
         <segue reference="f2G-tX-Rzo"/>
     </inferredMetricsTieBreakers>
     <resources>
-        <image name="gradient" width="736" height="1309"/>
         <image name="prodobuds-transparent" width="1850" height="1226"/>
+        <namedColor name="CreamColor">
+            <color red="0.91399997472763062" green="0.9179999828338623" blue="0.87800002098083496" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

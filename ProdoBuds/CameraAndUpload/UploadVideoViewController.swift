@@ -34,6 +34,12 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        // Ensure proper background color (especially important for SwiftUI transitions)
+        view.backgroundColor = UIColor(named: "Cream Color")
+        
         captionField.delegate = self
         
         videoView.layer.cornerRadius = 10.0
@@ -314,5 +320,16 @@ class UploadVideoViewController: UIViewController, UITextFieldDelegate {
         controller.addAction(UIAlertAction(title: "OK", style: .default))
             
         present(controller,animated:true)
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+        if view.frame.origin.y == 0 {
+            view.frame.origin.y -= keyboardFrame.height
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        view.frame.origin.y = 0
     }
 }

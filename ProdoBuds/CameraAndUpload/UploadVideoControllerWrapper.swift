@@ -18,7 +18,7 @@ struct UploadVideoControllerWrapper: UIViewControllerRepresentable {
         vc.additionalSafeAreaInsets = .zero
         
         // Force light mode appearance
-        vc.overrideUserInterfaceStyle = .light
+//        vc.overrideUserInterfaceStyle = .light
         
         return vc
     }

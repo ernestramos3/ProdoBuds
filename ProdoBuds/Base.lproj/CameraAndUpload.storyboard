@@ -41,7 +41,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="Upload" cornerStyle="capsule">
                                     <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="18"/>
-                                    <color key="baseBackgroundColor" name="GreenColor"/>
+                                    <color key="baseBackgroundColor" systemColor="systemGreenColor"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="uploadVideo:" destination="rMb-ZT-zkv" eventType="touchUpInside" id="4xY-O3-Al8"/>
@@ -75,7 +75,7 @@
                                 <buttonConfiguration key="configuration" style="plain">
                                     <imageReference key="image" image="music.pages" catalog="system" symbolScale="default"/>
                                     <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="50" scale="large"/>
-                                    <color key="baseForegroundColor" name="GreenColor"/>
+                                    <color key="baseForegroundColor" systemColor="systemGreenColor"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="selectMusic:" destination="rMb-ZT-zkv" eventType="touchUpInside" id="qLv-RV-kIG"/>
@@ -92,7 +92,7 @@
                                 <buttonConfiguration key="configuration" style="plain">
                                     <imageReference key="image" image="lock" catalog="system" symbolScale="default"/>
                                     <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="50" scale="large"/>
-                                    <color key="baseForegroundColor" name="GreenColor"/>
+                                    <color key="baseForegroundColor" systemColor="systemGreenColor"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="selectPrivacy:" destination="rMb-ZT-zkv" eventType="touchUpInside" id="dnE-yZ-7PX"/>
@@ -109,7 +109,7 @@
                                 <buttonConfiguration key="configuration" style="plain">
                                     <imageReference key="image" image="at" catalog="system" symbolScale="default"/>
                                     <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="50" scale="large"/>
-                                    <color key="baseForegroundColor" name="GreenColor"/>
+                                    <color key="baseForegroundColor" systemColor="systemGreenColor"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="selectMentions:" destination="rMb-ZT-zkv" eventType="touchUpInside" id="xLS-US-yyf"/>
@@ -126,18 +126,15 @@
                                 <buttonConfiguration key="configuration" style="plain">
                                     <imageReference key="image" image="microphone" catalog="system" symbolScale="default"/>
                                     <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="pointSize" pointSize="50" scale="large"/>
-                                    <color key="baseForegroundColor" name="GreenColor"/>
+                                    <color key="baseForegroundColor" systemColor="systemGreenColor"/>
                                 </buttonConfiguration>
                                 <connections>
                                     <action selector="selectVoiceover:" destination="rMb-ZT-zkv" eventType="touchUpInside" id="4kM-vM-Ata"/>
                                 </connections>
                             </button>
                             <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="top" borderStyle="roundedRect" placeholder="Add a caption..." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ZBg-rf-bgz">
-                                <rect key="frame" x="25" y="686" width="390" height="90"/>
-                                <color key="backgroundColor" red="0.93063803076744078" green="0.93063803076744078" blue="0.93063803076744078" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="90" id="tjF-3O-d5K"/>
-                                </constraints>
+                                <rect key="frame" x="25" y="666" width="390" height="110"/>
+                                <color key="backgroundColor" red="0.9077148438" green="0.9814453125" blue="0.8974609375" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
@@ -153,7 +150,7 @@
                             </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="i5i-8D-NKk"/>
-                        <color key="backgroundColor" name="PresentationColor"/>
+                        <color key="backgroundColor" name="CreamColor"/>
                         <constraints>
                             <constraint firstItem="uYc-xi-enS" firstAttribute="top" secondItem="l7B-ai-lil" secondAttribute="bottom" constant="5" id="2H6-tg-ENi"/>
                             <constraint firstItem="uYc-xi-enS" firstAttribute="trailing" secondItem="Hlt-QP-0eb" secondAttribute="trailing" constant="-30" id="2Zn-Dp-fvY"/>
@@ -163,6 +160,7 @@
                             <constraint firstItem="15J-1y-o8V" firstAttribute="leading" secondItem="Hlt-QP-0eb" secondAttribute="leading" constant="30" id="AUh-bM-pXG"/>
                             <constraint firstItem="l7B-ai-lil" firstAttribute="leading" secondItem="y42-vY-SRP" secondAttribute="trailing" constant="25" id="D8Z-OU-t8h"/>
                             <constraint firstItem="i5i-8D-NKk" firstAttribute="trailing" secondItem="ZBg-rf-bgz" secondAttribute="trailing" constant="25" id="IlI-z2-eUY"/>
+                            <constraint firstItem="ZBg-rf-bgz" firstAttribute="top" secondItem="5YI-h7-XgH" secondAttribute="bottom" constant="10" id="Tp8-hC-7nV"/>
                             <constraint firstItem="lGF-vt-QdH" firstAttribute="leading" secondItem="i5i-8D-NKk" secondAttribute="leading" constant="25" id="ZNZ-HF-SzO"/>
                             <constraint firstItem="5YI-h7-XgH" firstAttribute="leading" secondItem="i5i-8D-NKk" secondAttribute="leading" constant="25" id="ZqZ-FN-Dc1"/>
                             <constraint firstItem="i5i-8D-NKk" firstAttribute="trailing" secondItem="5YI-h7-XgH" secondAttribute="trailing" constant="25" id="aSA-fp-hBq"/>
@@ -195,14 +193,14 @@
         <image name="lock" catalog="system" width="111" height="128"/>
         <image name="microphone" catalog="system" width="110" height="128"/>
         <image name="music.pages" catalog="system" width="107" height="128"/>
-        <namedColor name="GreenColor">
-            <color red="0.054901960784313725" green="0.27843137254901962" blue="0.078431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="PresentationColor">
-            <color red="0.9137254901960784" green="0.91764705882352937" blue="0.8784313725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        <namedColor name="CreamColor">
+            <color red="0.91399997472763062" green="0.9179999828338623" blue="0.87800002098083496" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemGrayColor">
             <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGreenColor">
+            <color red="0.20392156859999999" green="0.78039215689999997" blue="0.34901960780000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
