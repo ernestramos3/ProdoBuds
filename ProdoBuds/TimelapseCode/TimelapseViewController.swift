@@ -8,15 +8,17 @@
 import UIKit
 import AVFoundation
 import AVKit
+import FirebaseFirestore
 
 var comments:[String] = []
+var currentPost: Post? = nil
 
 class TimelapseViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var timelapseTableView: UITableView!
     @IBOutlet weak var commentBarBottomConstraint: NSLayoutConstraint!
     
     var post: Post?
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -31,10 +33,13 @@ class TimelapseViewController: UIViewController, UITableViewDelegate, UITableVie
             print("Error: No post data received")
             return
         }
+        
+        currentPost = post
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        timelapseTableView.reloadData()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -68,6 +73,12 @@ class TimelapseViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
                 cell.descriptionLabel.text = post?.description ?? "unknown"
+                
+                let isLiked = post?.checkForUserInLikes(username: UserSession.shared.currentUser?.username ?? "") ?? false
+                let heartImageName = isLiked ? "heart.fill" : "heart"
+                print(heartImageName)
+                cell.likeButton.setImage(UIImage(systemName: heartImageName), for: .normal)
+                cell.likeButton.tintColor = .systemGreen
                 
                 var likeCount = post?.likes.count ?? 0
                 cell.numberOfLikesLabel.text = "\(likeCount)"
@@ -133,6 +144,7 @@ class TimelapseHeaderViewCell: UITableViewCell {
     @IBOutlet weak var numberOfCommentsLabel: UILabel!
     @IBOutlet weak var numberOfLikesLabel: UILabel!
     @IBOutlet weak var playButton: UIButton!
+    @IBOutlet weak var likeButton: UIButton!
     
     var player: AVPlayer?
     var playerLayer: AVPlayerLayer?
@@ -161,6 +173,31 @@ class TimelapseHeaderViewCell: UITableViewCell {
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem, queue: .main) { [weak self] _ in
             self?.playButton.setImage(UIImage(systemName: "goforward"), for: .normal)
         }
+    }
+    
+    @IBAction func likeButton2Pressed(_ sender: Any) {
+        var username = UserSession.shared.currentUser?.username ?? ""
+        
+        var id = currentPost?.getID() ?? ""
+        let db = Firestore.firestore()
+        let postRef = db.collection("posts")
+            .document(id)
+        
+        let config = UIImage.SymbolConfiguration(pointSize: likeButton.frame.height * 0.35, weight: .regular)
+        let wasRemoved = currentPost?.changeLikes(username: username) ?? false
+        var image = UIImage(systemName: "heart", withConfiguration: config)
+        
+        if wasRemoved {
+            postRef.updateData(["likes" : FieldValue.arrayRemove([username])])
+        }
+        else {
+            image = UIImage(systemName: "heart.fill", withConfiguration: config)
+            postRef.updateData(["likes" : FieldValue.arrayUnion([username])])
+        }
+        
+        likeButton.setImage(image, for: .normal)
+        likeButton.tintColor = .systemGreen
+        numberOfLikesLabel.text = "\(currentPost?.getNumberOfLikes() ?? 0)"
     }
     
     @IBAction func playButton2Pressed(_ sender: Any) {

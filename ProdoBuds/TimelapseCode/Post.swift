@@ -9,6 +9,7 @@ import FirebaseFirestore
 
 class Post {
     var user:String
+    var id:String
     var description:String
     var likes:[String] // list of usernames that like posts
     var taggedUsers:[String]
@@ -27,22 +28,30 @@ class Post {
         self.videoLink = dictionary["videoURL"] as? String ?? ""
         self.timestamp = dictionary["timestamp"] as? Timestamp
         self.thumbnailURL = dictionary["thumbnailURL"] as? String ?? ""
+        
+        self.id = dictionary["id"] as? String ?? ""
         //self.comments = [:]
     }
     
     // when the "heart" symbol is clicked on
-    func changeLikes(username:String) {
+    func changeLikes(username:String) -> Bool {
         // if username is already in list of likes, this means post will be unliked
         if let index = self.likes.firstIndex(of: username) {
             self.likes.remove(at: index)
+            return true
         }
         // else username isn't in the list of likes, meaning post will be liked
         else {
             self.likes.append(username)
+            return false
         }
     }
     
-    // returns username
+    func getID() -> String {
+        return self.id
+    }
+    
+    // returns username of the user that made the post
     func getUser() -> String {
         return self.user
     }

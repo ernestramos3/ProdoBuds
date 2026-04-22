@@ -413,6 +413,9 @@
                                                     <buttonConfiguration key="configuration" style="plain" image="heart" catalog="system">
                                                         <color key="baseForegroundColor" red="0.0" green="0.97680455450000003" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </buttonConfiguration>
+                                                    <connections>
+                                                        <action selector="likeButton2Pressed:" destination="g7T-Q0-yow" eventType="touchUpInside" id="K13-Bg-14X"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hoL-de-vwZ">
                                                     <rect key="frame" x="77" y="837" width="42" height="21"/>
@@ -451,6 +454,7 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="descriptionLabel" destination="5hJ-lM-65t" id="SJh-kW-HwN"/>
+                                            <outlet property="likeButton" destination="mcT-eo-aLn" id="mwE-br-4a1"/>
                                             <outlet property="numberOfCommentsLabel" destination="hoL-de-vwZ" id="gCI-S0-GyT"/>
                                             <outlet property="numberOfLikesLabel" destination="QB9-q5-Gfd" id="92H-1e-axA"/>
                                             <outlet property="playButton" destination="Y4q-gC-NrI" id="HTe-V2-Oa6"/>
@@ -743,6 +747,9 @@
                                                     <buttonConfiguration key="configuration" style="plain" image="heart" catalog="system">
                                                         <color key="baseForegroundColor" red="0.0" green="0.97680455450000003" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </buttonConfiguration>
+                                                    <connections>
+                                                        <action selector="likeButton2Pressed:" destination="RWU-EZ-1a8" eventType="touchUpInside" id="rcS-27-bOl"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aOr-bs-jsG">
                                                     <rect key="frame" x="77" y="837" width="42" height="21"/>
@@ -781,6 +788,7 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="descriptionLabel" destination="4aT-AP-wGu" id="32W-bi-B1L"/>
+                                            <outlet property="likeButton" destination="6K4-d5-bIt" id="Pqx-Jx-zee"/>
                                             <outlet property="numberOfCommentsLabel" destination="aOr-bs-jsG" id="g3E-rd-9bY"/>
                                             <outlet property="numberOfLikesLabel" destination="DHw-f0-8aA" id="T6K-eg-BgX"/>
                                             <outlet property="playButton" destination="e4Y-LI-UdX" id="RhI-wP-l6C"/>
@@ -941,6 +949,9 @@
                                                     <buttonConfiguration key="configuration" style="plain" image="heart" catalog="system">
                                                         <color key="baseForegroundColor" red="0.0" green="0.97680455450000003" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     </buttonConfiguration>
+                                                    <connections>
+                                                        <action selector="likeButton2Pressed:" destination="5yK-Ye-vMa" eventType="touchUpInside" id="jex-H8-wri"/>
+                                                    </connections>
                                                 </button>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="0" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0Fu-j1-J77">
                                                     <rect key="frame" x="77" y="837" width="42" height="21"/>
@@ -979,6 +990,7 @@
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="descriptionLabel" destination="2By-Fh-WNN" id="Yes-d2-BX4"/>
+                                            <outlet property="likeButton" destination="t4Y-eq-W2F" id="DLq-kF-qFb"/>
                                             <outlet property="numberOfCommentsLabel" destination="0Fu-j1-J77" id="PG6-r8-xJO"/>
                                             <outlet property="numberOfLikesLabel" destination="9fC-df-Jbj" id="NzH-e9-0ya"/>
                                             <outlet property="playButton" destination="GYp-5b-RY8" id="NBu-ao-Cu5"/>

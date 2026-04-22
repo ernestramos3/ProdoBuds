@@ -28,6 +28,13 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
         let storage = Storage.storage()
         
         // query into database
+        db.collection("posts").getDocuments {snapshot, error in snapshot?.documents.forEach { doc in
+                if doc.data()["id"] == nil {
+                    doc.reference.updateData(["id": doc.documentID])
+                }
+            }
+        }
+        
         db.collection("posts")
             .getDocuments { (querySnapshot, error) in
                 if let error = error {
@@ -81,6 +88,7 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        feedTableView.reloadData()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -133,11 +141,13 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
         
-//        if specificPost.checkForUserInLikes(username: UserSession.shared.currentUser?.username ?? "") {
-//            cell.likeButton.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-//        }
-//        else {
-//            cell.likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
+        let isLiked = specificPost.checkForUserInLikes(username: UserSession.shared.currentUser?.username ?? "")
+        let heartImageName = isLiked ? "heart.fill" : "heart"
+        cell.likeButton.setImage(UIImage(systemName: heartImageName), for: .normal)
+        cell.likeButton.tintColor = .systemGreen
+        
+//        cell.onLikeToggle = { [weak self] in
+//            self?.feedTableView.reloadData()
 //        }
         
         return cell
@@ -181,6 +191,8 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
                 if let post = sender as? Post {
                     // inject data into the destination
                     timelapseVC.post = post
+//                    timelapseVC.onLikeToggle = { [weak self] in self?.feedTableView.reloadData()
+//                    }
                     print("Success in passing postdata")
                 }
                 else {
@@ -207,6 +219,8 @@ class FeedPostViewCell: UITableViewCell {
     weak var delegate: FeedPostViewCellDelegate?
     var post: Post?
     
+    //var onLikeToggle: (() -> Void)?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // initialization code
@@ -231,6 +245,30 @@ class FeedPostViewCell: UITableViewCell {
     
     @IBAction func likeButton2Pressed(_ sender: Any) {
 //        post?.changeLikes(username: UserSession.shared.currentUser?.username ?? "")
+        var username = UserSession.shared.currentUser?.username ?? ""
+        
+        var id = post?.getID() ?? ""
+        let db = Firestore.firestore()
+        let postRef = db.collection("posts")
+            .document(id)
+        
+        let config = UIImage.SymbolConfiguration(pointSize: likeButton.frame.height * 0.35, weight: .regular)
+        let wasRemoved = post?.changeLikes(username: username) ?? false
+        var image = UIImage(systemName: "heart", withConfiguration: config)
+        
+        if wasRemoved {
+            postRef.updateData(["likes" : FieldValue.arrayRemove([username])])
+        }
+        else {
+            image = UIImage(systemName: "heart.fill", withConfiguration: config)
+            postRef.updateData(["likes" : FieldValue.arrayUnion([username])])
+        }
+        
+        likeButton.setImage(image, for: .normal)
+        likeButton.tintColor = .systemGreen
+        numberOfLikesLabel.text = "\(post?.getNumberOfLikes() ?? 0)"
+        
+        //onLikeToggle?()
     }
 }
 
