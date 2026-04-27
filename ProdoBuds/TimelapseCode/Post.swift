@@ -20,7 +20,7 @@ class Post {
     
     var thumbnailURL:String
     
-    init(dictionary: [String: Any]) {
+    init(dictionary: [String: Any], documentId: String? = nil) {
         self.user = dictionary["user"] as? String ?? ""
         self.description = dictionary["description"] as? String ?? ""
         self.likes = dictionary["likes"] as? [String] ?? []
@@ -29,7 +29,8 @@ class Post {
         self.timestamp = dictionary["timestamp"] as? Timestamp
         self.thumbnailURL = dictionary["thumbnailURL"] as? String ?? ""
         
-        self.id = dictionary["id"] as? String ?? ""
+        // Use the actual Firestore document ID if provided, otherwise fall back to the id field
+        self.id = documentId ?? (dictionary["id"] as? String ?? "")
         //self.comments = [:]
     }
     

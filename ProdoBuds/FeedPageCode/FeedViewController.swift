@@ -52,6 +52,9 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
                     var data = document.data()
                     let gsPath = data["videoURL"] as? String ?? ""
                     
+                    // Capture the actual Firestore document ID
+                    let firestoreDocId = document.documentID
+                    
                     if gsPath.hasPrefix("gs://") {
                         group.enter() // tells group we are starting a task
                         
@@ -62,14 +65,16 @@ class FeedViewController: UIViewController, UITableViewDelegate, UITableViewData
                                 data["videoURL"] = downloadURL.absoluteString
                             }
                             
-                            let post = Post(dictionary: data)
+                            // Pass the Firestore document ID to the Post initializer
+                            let post = Post(dictionary: data, documentId: firestoreDocId)
                             fetchedPosts.append(post)
                             
                             group.leave() // tells group this task is done
                         }
                     }
                     else {
-                        let post = Post(dictionary: data)
+                        // Pass the Firestore document ID to the Post initializer
+                        let post = Post(dictionary: data, documentId: firestoreDocId)
                         fetchedPosts.append(post)
                     }
                 }
