@@ -68,7 +68,7 @@ class NameViewController: UIViewController, UITextFieldDelegate{
                     }
                     guard let downloadURL = url else { return }
                     
-                    // now save everything to Firestore
+                    // saves everything to the firestore
                     let db = Firestore.firestore()
                     db.collection("users").document(user.uid).setData([
                         "username": SignupData.shared.username,
@@ -86,6 +86,41 @@ class NameViewController: UIViewController, UITextFieldDelegate{
                             SignupData.shared.reset()
                             self.performSegue(withIdentifier: "FinishedCreateAccIdentifier", sender: self)
                         }
+                    }
+                    
+                    // grabs the user and logs them in
+                    guard let currUser = Auth.auth().currentUser else {
+                        self.errorMsg.text = "Could not log in user."
+                        return
+                    }
+                    
+                    // building shared instance of AppUser so all viewcontrollers can access the current user's data easily
+                    db.collection("users").document(currUser.uid).getDocument { snapshot, error in
+                        if let error = error {
+                            self.errorMsg.text = error.localizedDescription
+                            return
+                        }
+                        guard let currUserData = snapshot?.data() else {
+                            self.errorMsg.text = "User data not found."
+                            return
+                        }
+                        let appUser = AppUser(
+                            uid: currUser.uid,
+                            username: currUserData["username"] as? String ?? "",
+                            bio: currUserData["bio"] as? String ?? "",
+                            preferences: currUserData["preferences"] as? [String] ?? [],
+                            profileImageURL: currUserData["profileImageURL"] as? String ?? "",
+                            followers: currUserData["followers"] as? [String] ?? [],
+                            following: currUserData["following"] as? [String] ?? []
+                        )
+                        // this is how you can access ^ those fields
+                        UserSession.shared.currentUser = appUser
+                        
+                        // changes to the fyp
+                        let storyboard = UIStoryboard(name: "HomeScreen", bundle: nil)
+                        let vc = storyboard.instantiateViewController(withIdentifier: "HomeScreenStoryboardID")
+                        vc.modalPresentationStyle = .fullScreen
+                        self.present(vc, animated: true)
                     }
                 }
             }
